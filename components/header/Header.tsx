@@ -1,6 +1,6 @@
 'use client'
 import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons'
-import style from "../Header/header.module.scss"
+import style from "../header/header.module.scss"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useRef } from 'react'
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons'

@@ -1,7 +1,7 @@
 'use client';
 import React from 'react'
 import foto1 from "../../public/img/124434370.jpeg"
-import style from "../Main/main.module.scss"
+import style from "../main/main.module.scss"
 
 const Main:React.FC = () => {
 
