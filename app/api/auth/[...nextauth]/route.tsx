@@ -39,7 +39,7 @@ const handler = NextAuth({
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
       
           const apiDomen = process.env.apiDomen;
-       console.log(apiDomen)
+       console.error(apiDomen)
           const res = await fetch(`${apiDomen}api/Auth/Login`, {
             method: 'POST',
             headers: {
