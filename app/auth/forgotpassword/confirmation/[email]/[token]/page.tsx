@@ -6,15 +6,16 @@ import Link from "next/link";
 
 
 
-const page:React.FC<{params:{token:string,email:string}}>=async ({params})=>{
+const page:React.FC<{params:Promise<{token:string,email:string}>}>=async ({params})=>{
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+    const{token,email}=await params;
     const apiDomen = process.env.apiDomen;
     const response = await fetch(
-        `${apiDomen}api/Auth/CheckTokenForForgotPassword?Email=${encodeURIComponent(params.email)}&Token=${encodeURIComponent(params.token)}`
+        `${apiDomen}api/Auth/CheckTokenForForgotPassword?Email=${encodeURIComponent(email)}&Token=${encodeURIComponent(token)}`
       );
    const result:Result<null>= await response.json();
     if (result.isSuccess) {
-        return <ChangePasswordForm apiDomen={apiDomen} email={params.email}  token={params.token} key={1}/>
+        return <ChangePasswordForm apiDomen={apiDomen} email={email}  token={token} key={1}/>
     }
     return (
         <div className="flex items-center justify-center min-h-screen bg-black-100">

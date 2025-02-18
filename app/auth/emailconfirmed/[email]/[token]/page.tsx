@@ -1,18 +1,19 @@
 
 import Result from "@/types/ApiResultType";
+import { Metadata } from "next";
 import Link from "next/link";
-import { FC } from "react";
-
-interface PageProps {
-  params: {
-    email: string;
-    token: string;
-  };
-}
 
 
-const page: FC<PageProps> = async ({ params }) => {
-  const { email, token } = params; 
+
+
+
+export default async function Page ({
+  params,
+}: {
+  params: Promise<{ email: string,token:string }>
+})
+ {
+  const { email, token } = await params; 
 
   try {
     const apiDomen = process.env.apiDomen;
@@ -57,4 +58,3 @@ const page: FC<PageProps> = async ({ params }) => {
     );
   }
 };
-export default page
