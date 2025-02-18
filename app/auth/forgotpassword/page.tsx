@@ -11,7 +11,7 @@ const forgotPassword:React.FC = () => {
     const apiDomen = process.env.apiDomen;
     return <ForgotPassword key={1} apiDomen={apiDomen}/>
   } catch (error) {
-    console.error(error)
+    console.log(error)
   }
 }
 export default forgotPassword
