@@ -35,11 +35,11 @@ const handler = NextAuth({
         password: {},
       },
       async authorize(credentials) {
-      debugger;
+ 
           process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
       
           const apiDomen = process.env.apiDomen;
-       
+       console.log(apiDomen)
           const res = await fetch(`${apiDomen}api/Auth/Login`, {
             method: 'POST',
             headers: {
@@ -96,7 +96,6 @@ const handler = NextAuth({
   ],
   pages: {
     signIn: '/auth/login',
-    error: '/auth/error',
   },
   callbacks: {
     async jwt({ token, user }) {
