@@ -3,7 +3,7 @@ import Link from "next/link"
 import { signIn } from 'next-auth/react'
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import Loader from "../common/Loader"
+import Loader from "../common/loader"
 import Swal from "sweetalert2"
 
 

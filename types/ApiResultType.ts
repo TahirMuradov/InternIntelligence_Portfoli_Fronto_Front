@@ -1,5 +1,5 @@
 export  default interface Result<T>{
-    response:T,
+    data:T,
     isSuccess:boolean,
     message:string|null,
     messages:string[]|null,
