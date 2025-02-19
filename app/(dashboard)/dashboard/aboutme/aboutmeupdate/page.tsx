@@ -1,4 +1,4 @@
-import AboutMeUpdateForm from "@/components/dashboard/AboutMe/AboutMeUpdateForm"
+import AboutMeUpdateForm from "@/components/dashboard/aboutMe/AboutMeUpdateForm"
 
 
 const page = () => {

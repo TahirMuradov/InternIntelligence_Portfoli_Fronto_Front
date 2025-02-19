@@ -4,23 +4,21 @@ import Result from "@/types/ApiResultType"
 import { useRouter } from "next/navigation";
 import {  useEffect, useState } from "react";
 import Swal from "sweetalert2";
-
-
 import { signOut, useSession } from "next-auth/react";
-import GetAboutMeDetailDTO from "@/types/AboutMeTypes/GetAboutMeDetailDTO";
 import Loader from "@/components/common/loader";
+import GetMainDetail from "@/types/MainTypes/GetMainDetail";
 
 
-const UpdateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
+const UpdateMainForm:React.FC<{apiDomen:string|undefined}>=({
     apiDomen,
     
 })=>{
-const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
+const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
-        fetch(`${apiDomen}api/Aboutme/GetAboutMeForTable`, {
+        fetch(`${apiDomen}api/Main/GetMainForTable`, {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -66,7 +64,7 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
         if (result) {
             
             if (result.isSuccess) {
-          SetAboutMe(result)
+          Setmain(result)
           
        
          
@@ -118,16 +116,19 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
        SetLoader(true)
        const form = new FormData(e.currentTarget);      
    
-    form.append("id",`${aboutMe?.data.id}`)
+    form.append("id",`${main?.data.id}`)
 
    
        fetch(`${apiDomen}api/Aboutme/UpdateAboutMe`, {
            method:'PUT',
            headers: {
-              'Content-Type': 'multipart/form-data',
-              'Authorization':`Bearer ${sessions.data?.user.token}`
+             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
-           body:form ,
+           body:JSON.stringify({
+            id:main?.data.id,
+            title:form.get("title"),
+            description:form.get("description")
+           }) ,
        })
        .then(response => {
         if (response.status==401) {
@@ -169,13 +170,13 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Payment Method updated successfully!',
+                    text: 'Main successfully!',
                     icon: 'success',
                     confirmButtonText: 'Cool'
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
-                router.push("/dashboard/paymentmethod/1")
+                router.push("/dashboard/main")
                     }
                 });
             } else {
@@ -212,6 +213,7 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
            Swal.fire({
                title: 'Error!',
                text: 'An unexpected error occurred!',
+               
                icon: 'error',
                confirmButtonText: 'Cool'
            }).then(x=>{
@@ -222,7 +224,7 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
        });
       
    }
-   if (loader || aboutMe?.data==null) {
+   if (loader || main?.data==null) {
        return(<Loader/>)
    }
    return(<form id="addPaymentgMethod" onSubmit={HandleSubmit}>
@@ -235,8 +237,8 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
             <input
                 placeholder="Full Name"
                 type="text"
-                name="FullName"
-                defaultValue={aboutMe?.data.fullName || ""}
+                name="title"
+                defaultValue={main?.data.title || ""}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -248,138 +250,17 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
         {/* Description */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                AboutMe Description:
+                Description:
             </label>
             <input
                 placeholder="AboutMe Description"
                 type="text"
                 name="Description"
-                defaultValue={aboutMe?.data.description || ""}
+                defaultValue={main?.data.description || ""}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
                           dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Birth Day */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Birth Day:
-            </label>
-            <input
-                type="date"
-                name="BirthDay"
-                defaultValue={Date.parse(`${aboutMe?.data.birthDay}`) || ""}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Nationality */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Nationality:
-            </label>
-            <input
-                placeholder="Nationality"
-                type="text"
-                name="Nationality"
-                defaultValue={aboutMe?.data.nationality || ""}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Address */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Address:
-            </label>
-            <input
-                placeholder="Address"
-                type="text"
-                name="Adress"
-                defaultValue={aboutMe?.data.adress || ""}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Phone Number */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Phone Number:
-            </label>
-            <input
-                placeholder="Phone Number"
-                type="text"
-                name="PhoneNumber"
-                defaultValue={aboutMe?.data.phoneNumber || ""}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Email */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Email:
-            </label>
-            <input
-                placeholder="Email"
-                type="email"
-                name="Email"
-                defaultValue={aboutMe?.data.email || ""}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Photo Input (Accepts Only Images) */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Upload Photo:
-            </label>
-            <input
-                type="file"
-                name="Photo"
-                accept="image/png, image/jpeg, image/jpg"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer 
-                          bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 
-                          dark:border-gray-600 dark:placeholder-gray-400"
-                required
-            />
-        </div>
-
-        {/* CV Input (Accepts Only PDF) */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Upload CV (PDF):
-            </label>
-            <input
-                type="file"
-                name="Cv"
-                accept=".pdf"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer 
-                          bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 
-                          dark:border-gray-600 dark:placeholder-gray-400"
                 required
             />
         </div>
@@ -398,4 +279,4 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
 }
 
 
-export default UpdateAboutMeForm
+export default UpdateMainForm
