@@ -1,136 +1,39 @@
 "use client"
-
-import Result from "@/types/ApiResultType"
 import { useRouter } from "next/navigation";
-import {  useEffect, useState } from "react";
+import { useState } from "react";
 import Swal from "sweetalert2";
 import { signOut, useSession } from "next-auth/react";
 import Loader from "@/components/common/loader";
-import GetMainDetail from "@/types/MainTypes/GetMainDetail";
 
 
-const UpdateMainForm:React.FC<{apiDomen:string|undefined}>=({
+const AddProjectForm:React.FC<{apiDomen:string|undefined}>=({
     apiDomen,
     
 })=>{
-const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
+
     const[loader,SetLoader]=useState<boolean>(false)
     const router=useRouter();
     const sessions=useSession();
-    useEffect(()=>{
-        fetch(`${apiDomen}api/Main/GetMainForTable`, {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-                         'Authorization':`Bearer ${sessions.data?.user.token}`
-          }
-      })
-      .then(response =>{ 
-        
-  
-            if (response.status==401) {
-                Swal.fire({
-                    title: 'Authorization Error!',
-                    text: 'Your session has expired. Please log in again.',
-                    icon: 'info',
-                    confirmButtonText: 'Login',
-                     allowEscapeKey:false,
-                     allowOutsideClick:false                     
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        signOut(); 
-                        SetLoader(false);
-                                        }
-                });
-                return ;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                     SetLoader(false)      
-                 signOut()
-                    }
-                });
-                return ;
-            }
-     
-        
-        return  response.json()})
-      .then(result => {
-        if (result) {
-            
-            if (result.isSuccess) {
-          Setmain(result)
-          
-       
-         
-            } else {
-              let errors = "<ul>";
-              if (Array.isArray(result.messages)) {
-              
-                  result.messages.forEach((message:string)=> {
-                      errors += `<li>${message}</li>`;
-                  });
-              } else if (result.message) {
-               
-                  errors += `<li>${result.message}</li>`;
-              }
-              errors += "</ul>";
-      
-              Swal.fire({
-                  title: 'Error!',
-                  html: errors, 
-                  icon: 'error',
-                  confirmButtonText: 'Cool',
-                  allowEscapeKey:false,
-                  allowOutsideClick:false
-              }).then(res => {
-                  if (res.isConfirmed) {
-                      SetLoader(false);
-                     router.refresh();
-                  }
-              });
-            }
-        }
-      })
-      .catch(error => {
-      
-          Swal.fire({
-              title: 'Error!',
-              text: `An unexpected error occurred!${error}`,
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false,
-
-          });
-      });
-      },[])
+   
 
       function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
        e.preventDefault();
        SetLoader(true)
-       const form = new FormData(e.currentTarget);      
-   
-    form.append("id",`${main?.data.id}`)
-
-   
-       fetch(`${apiDomen}api/Aboutme/UpdateAboutMe`, {
-           method:'PUT',
+       const form = new FormData(e.currentTarget);       
+  
+       fetch(`${apiDomen}/api/Project/AddProject`, {
+           method:'POST',
            headers: {
-             'Authorization':`Bearer ${sessions.data?.user.token}`
+            'Authorization':`Bearer ${sessions.data?.user.token}`
             },
+
            body:JSON.stringify({
-            id:main?.data.id,
-            title:form.get("title"),
-            description:form.get("description")
+            name:form.get("name"),
+description:form.get("description"),
            }) ,
        })
        .then(response => {
+       
         if (response.status==401) {
             Swal.fire({
                 title: 'Authorization Error!',
@@ -147,36 +50,28 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                 SetLoader(false)  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
         return response.json()
     })
        .then(result => {
+
+        
         if (result) {
             
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Main successfully!',
+                    text: 'Project created successfully!',
                     icon: 'success',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowEnterKey:true,
+                    allowEscapeKey:false,
+                    allowOutsideClick:false,
+                                     
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
-                router.push("/dashboard/main")
+                router.push("/dashboard/project/1")
                     }
                 });
             } else {
@@ -203,8 +98,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
              }).then(res => {
                  if (res.isConfirmed) {
                      SetLoader(false);
-                     router.refresh();
-                 }
+                    }
              });
             }
         }
@@ -213,12 +107,13 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
            Swal.fire({
                title: 'Error!',
                text: `An unexpected error occurred!${error}`,
-               
                icon: 'error',
-               confirmButtonText: 'Cool'
-           }).then((x)=>{
-            if(x.isConfirmed){
-
+               confirmButtonText: 'Cool',
+               allowEscapeKey:false,
+               allowOutsideClick:false
+           }).then(x=>{
+            if (x.isConfirmed) {
+                
                 SetLoader(false)
              
                 router.refresh();
@@ -227,7 +122,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
        });
       
    }
-   if (loader || main?.data==null) {
+   if (loader) {
        return(<Loader/>)
    }
    return(<form id="addPaymentgMethod" onSubmit={HandleSubmit}>
@@ -235,13 +130,12 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
         {/* Full Name */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Full Name:
+           Name:
             </label>
             <input
-                placeholder="Full Name"
+                placeholder="Project Name"
                 type="text"
-                name="title"
-                defaultValue={main?.data.title || ""}
+                name="name"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -256,10 +150,10 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                 Description:
             </label>
             <input
-                placeholder="AboutMe Description"
+                placeholder="Education Description"
                 type="text"
-                name="Description"
-                defaultValue={main?.data.description || ""}
+                name="description"
+               
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -267,6 +161,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                 required
             />
         </div>
+     
     </div>
 
     <button
@@ -282,4 +177,4 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
 }
 
 
-export default UpdateMainForm
+export default AddProjectForm

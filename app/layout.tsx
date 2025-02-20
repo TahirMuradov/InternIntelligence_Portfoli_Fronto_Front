@@ -5,7 +5,6 @@ import Provider from "./Provider";
 import "../components/education/education.scss"
 import "@fortawesome/fontawesome-svg-core/styles.css"; 
 import { config } from "@fortawesome/fontawesome-svg-core";
-import Header from "@/components/header/Header";
 import BackToTopButton from "@/components/backToTop/BackToTop";
 config.autoAddCss=true;
 const geistSans = Geist({

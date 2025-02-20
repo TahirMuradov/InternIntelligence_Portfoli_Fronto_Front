@@ -6,7 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import Loader from "@/components/common/loader";
 
 
-const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
+const AddEducationForm:React.FC<{apiDomen:string|undefined}>=({
     apiDomen,
     
 })=>{
@@ -21,13 +21,18 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
        SetLoader(true)
        const form = new FormData(e.currentTarget);       
   
-       fetch(`${apiDomen}api/Aboutme/AddAboutMe`, {
+       fetch(`${apiDomen}api/Education/AddEducation`, {
            method:'POST',
            headers: {
             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
 
-           body:form ,
+           body:JSON.stringify({
+            educationName:form.get("educationName"),
+description:form.get("description"),
+startDate:form.get("startDate"),
+endDate:form.get("endDate"),
+           }) ,
        })
        .then(response => {
        
@@ -58,7 +63,7 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'About me created successfully!',
+                    text: 'Education created successfully!',
                     icon: 'success',
                     confirmButtonText: 'Cool',
                     allowEnterKey:true,
@@ -68,7 +73,7 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
-                router.push("/dashboard/aboutme")
+                router.push("/dashboard/main")
                     }
                 });
             } else {
@@ -106,12 +111,13 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
                text: `An unexpected error occurred!${error}`,
                icon: 'error',
                confirmButtonText: 'Cool',
-               allowOutsideClick:false,
-               allowEscapeKey:false
+               allowEscapeKey:false,
+               allowOutsideClick:false
            }).then(x=>{
-            if(x.isConfirmed){
-
+            if (x.isConfirmed) {
+                
                 SetLoader(false)
+             
                 router.refresh();
             }
            });
@@ -126,12 +132,12 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
         {/* Full Name */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Full Name:
+            Education Name:
             </label>
             <input
-                placeholder="Full Name"
+                placeholder="EducationName"
                 type="text"
-                name="fullName"
+                name="educationName"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -143,10 +149,10 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
         {/* Description */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                AboutMe Description:
+                Description:
             </label>
             <input
-                placeholder="AboutMe Description"
+                placeholder="Education Description"
                 type="text"
                 name="description"
                
@@ -157,15 +163,14 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
                 required
             />
         </div>
-
-        {/* Birth Day */}
+        {/*Start Dtae*/}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Birth Day:
+                Start Date:
             </label>
             <input
                 type="date"
-                name="birthDay"
+                name="startDate"
            
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
@@ -174,107 +179,19 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
                 required
             />
         </div>
-
-        {/* Nationality */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
+      {/*End Date*/}
+      <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Nationality:
+                Start Date:
             </label>
             <input
-                placeholder="Nationality"
-                type="text"
-                name="nationality"
-       
+                type="date"
+                name="endDate"
+           
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
                           dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Address */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Address:
-            </label>
-            <input
-                placeholder="Address"
-                type="text"
-                name="adress"
-         
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Phone Number */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Phone Number:
-            </label>
-            <input
-                placeholder="Phone Number"
-                type="text"
-                name="phoneNumber"
-              
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Email */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Email:
-            </label>
-            <input
-                placeholder="Email"
-                type="email"
-                name="email"
-            
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
-        </div>
-
-        {/* Photo Input (Accepts Only Images) */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Upload Photo:
-            </label>
-            <input
-                type="file"
-                name="photo"
-                accept="image/png, image/jpeg, image/jpg"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer 
-                          bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 
-                          dark:border-gray-600 dark:placeholder-gray-400"
-                required
-            />
-        </div>
-
-        {/* CV Input (Accepts Only PDF) */}
-        <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Upload CV (PDF):
-            </label>
-            <input
-                type="file"
-                name="cv"
-                accept=".pdf"
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer 
-                          bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 
-                          dark:border-gray-600 dark:placeholder-gray-400"
                 required
             />
         </div>
@@ -293,4 +210,4 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
 }
 
 
-export default CreateAboutMeForm
+export default AddEducationForm

@@ -1,9 +1,6 @@
 
 
 import "../globals.css"
-
-import { SessionProvider } from "next-auth/react";
-
 import Header from "@/components/header/Header";
 import Provider from "../Provider";
 

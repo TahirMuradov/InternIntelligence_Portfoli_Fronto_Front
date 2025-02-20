@@ -6,23 +6,22 @@ import {  useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { signOut, useSession } from "next-auth/react";
 import Loader from "@/components/common/loader";
-import GetMainDetail from "@/types/MainTypes/GetMainDetail";
+import GetSkillDetail from "@/types/SkillTypes/GetSkillDetail";
 
 
-const UpdateMainForm:React.FC<{apiDomen:string|undefined}>=({
+const UpdateProjectForm:React.FC<{id:string,apiDomen:string|undefined}>=({
     apiDomen,
-    
+    id
 })=>{
-const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
+const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
     const[loader,SetLoader]=useState<boolean>(false)
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
-        fetch(`${apiDomen}api/Main/GetMainForTable`, {
+        fetch(`${apiDomen}api/Skill/GetSkillById?id=${id}`, {
           method: 'GET',
           headers: {
-              'Content-Type': 'application/json',
-                         'Authorization':`Bearer ${sessions.data?.user.token}`
+          'Authorization':`Bearer ${sessions.data?.user.token}`
           }
       })
       .then(response =>{ 
@@ -64,7 +63,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
         if (result) {
             
             if (result.isSuccess) {
-          Setmain(result)
+          SetSkill(result)
           
        
          
@@ -114,20 +113,17 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
       function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
        e.preventDefault();
        SetLoader(true)
-       const form = new FormData(e.currentTarget);      
-   
-    form.append("id",`${main?.data.id}`)
-
-   
-       fetch(`${apiDomen}api/Aboutme/UpdateAboutMe`, {
+       const form = new FormData(e.currentTarget);        
+       fetch(`${apiDomen}api/Skill/UpdateSkill`, {
            method:'PUT',
            headers: {
-             'Authorization':`Bearer ${sessions.data?.user.token}`
+                          'Authorization':`Bearer ${sessions.data?.user.token}`
             },
            body:JSON.stringify({
-            id:main?.data.id,
-            title:form.get("title"),
-            description:form.get("description")
+
+            id:skill?.data.id,
+            skillName:form.get("skillName"),
+            isBackend: form.get("isBackend")=="on"?true:false
            }) ,
        })
        .then(response => {
@@ -152,7 +148,9 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                 title: 'Error!',
                 text: 'An unexpected error occurred!',
                 icon: 'error',
-                confirmButtonText: 'Cool'
+                confirmButtonText: 'Cool',
+                allowOutsideClick:false,
+                allowEscapeKey:false
             }).then(x=>{
               if (x.isConfirmed) {
                  SetLoader(false)  
@@ -170,13 +168,15 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Main successfully!',
+                    text: 'Skill updated successfully!',
                     icon: 'success',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowOutsideClick:false,
+                    allowEscapeKey:false
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
-                router.push("/dashboard/main")
+                router.push("/dashboard/skill/1")
                     }
                 });
             } else {
@@ -213,12 +213,13 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
            Swal.fire({
                title: 'Error!',
                text: `An unexpected error occurred!${error}`,
-               
                icon: 'error',
-               confirmButtonText: 'Cool'
-           }).then((x)=>{
-            if(x.isConfirmed){
-
+               confirmButtonText: 'Cool',
+               allowEscapeKey:false,
+               allowOutsideClick:false
+           }).then(x=>{
+            if (x.isConfirmed) {
+                
                 SetLoader(false)
              
                 router.refresh();
@@ -227,7 +228,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
        });
       
    }
-   if (loader || main?.data==null) {
+   if (loader || skill?.data==null) {
        return(<Loader/>)
    }
    return(<form id="addPaymentgMethod" onSubmit={HandleSubmit}>
@@ -235,13 +236,13 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
         {/* Full Name */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Full Name:
+                 Name:
             </label>
             <input
-                placeholder="Full Name"
+                placeholder="Skill Name"
                 type="text"
-                name="title"
-                defaultValue={main?.data.title || ""}
+                name="skillName"
+                defaultValue={skill?.data.skillName || ""}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -250,23 +251,20 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
             />
         </div>
 
-        {/* Description */}
+        {/* isBackend */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Description:
-            </label>
-            <input
-                placeholder="AboutMe Description"
-                type="text"
-                name="Description"
-                defaultValue={main?.data.description || ""}
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
+       {
+        skill.data.isBackend?
+        <input id="isfeatured" defaultChecked name="isBackend" type="checkbox"  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+      :
+      <input id="isfeatured"  name="isBackend" type="checkbox"  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+    } 
+        <label htmlFor="isfeatured" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Is Backend</label>
+        
         </div>
+
+     
+      
     </div>
 
     <button
@@ -282,4 +280,4 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
 }
 
 
-export default UpdateMainForm
+export default UpdateProjectForm

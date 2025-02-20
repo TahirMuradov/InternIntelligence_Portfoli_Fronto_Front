@@ -8,7 +8,8 @@ import Loader from "../../common/loader/index";
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import GetMainDetail from "@/types/MainTypes/GetMainDetail";
+import GetEducationDetail from "@/types/EducationTypes/GetEducationDetail";
+import PaginatedList from "@/types/PaginatedList";
 
 
 
@@ -32,14 +33,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     },
   }));
 
-const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
-    const[main,Setmain]=useState<Result<GetMainDetail>|null>(null);
+const EducationTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) => {
+    const[educations,SetEducations]=useState<Result<PaginatedList<GetEducationDetail>>|null>(null);
     const router=useRouter();
     const sessions=useSession();
   
     useEffect(()=>{
     
-      fetch(`${apiDomen}api/Main/GetMainForTable`, {
+      fetch(`${apiDomen}api/Education/GetEducationForTable?page=${page}`, {
         headers: {
            'Authorization':`Bearer ${sessions.data?.user.token}`,
         },
@@ -91,17 +92,15 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
     ).then(x=>{
       if (x) {
    
-          Setmain(x)
-        console.log(x)
-     
+          SetEducations(x)
+      
       }
     });
-    console.log(main)
     },[])
      const [loader,SetLoader]=useState<boolean>(false)
-      function MainDelete(id:string){
+      function EducationDelete(id:string){
         SetLoader(true)
-       fetch(`${apiDomen}api/Main/DeleteMain?MainId=${id}`, {
+       fetch(`${apiDomen}api/Education/DeleteEducation?id=${id}`, {
           headers: {
           'Authorization':`Bearer ${sessions.data?.user.token}`
           },
@@ -130,7 +129,10 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
               title: 'Error!',
               text: 'An unexpected error occurred!',
               icon: 'error',
-              confirmButtonText: 'Cool'
+              confirmButtonText: 'Cool',
+              allowEscapeKey:false,
+              allowOutsideClick:false 
+
           }).then(x=>{
             if (x.isConfirmed) {
               
@@ -152,19 +154,22 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
             if (responsData.isSuccess) {
               Swal.fire({
                   title: 'Success!',
-                  text: 'Main  delete successfully!',
+                  text: 'Education  delete successfully!',
                   icon: 'success',
-                  confirmButtonText: 'Cool'
+                  confirmButtonText: 'Cool',
+                  allowEscapeKey:false,
+                  allowOutsideClick:false 
               }).then((res) => {
                   if (res.isConfirmed) {
                     SetLoader(false)
-                    fetch(`${apiDomen}api/Main/GetMainForTable`, {
+                    fetch(`${apiDomen}api/Education/GetEducationForTable?page=${page}`, {
                       headers: {
-                                            'Authorization':`Bearer ${sessions.data?.user.token}`,
+                      
+                        'Authorization':`Bearer ${sessions.data?.user.token}`,
                       },
                       cache:"no-store",
                       method: "GET",
-                    }).then(res=>res.json()).then(x=>Setmain(x));
+                    }).then(res=>res.json()).then(x=>SetEducations(x));
                       router.refresh();
                   }
               })
@@ -177,7 +182,7 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
               if (res.isConfirmed) {
                 SetLoader(false)
                 router.refresh();
-                  router.push("/dashboard/main")// Clear the form
+                  router.push("/dashboard/education/1")// Clear the form
               }
           })
           }
@@ -197,10 +202,11 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
             <TableHead>
               <TableRow>
                 <StyledTableCell align='center'> Id</StyledTableCell>
-                <StyledTableCell align='center'>Title</StyledTableCell>
+                <StyledTableCell align='center'>Education Name</StyledTableCell>
                 <StyledTableCell align='center'>Description</StyledTableCell>
-           
-             
+                <StyledTableCell align='center'>Start Date</StyledTableCell>
+                <StyledTableCell align='center'>End Date</StyledTableCell>
+                          
              
            
             
@@ -209,34 +215,35 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
             </TableHead>
             <TableBody>
              {
-              main?.data !=null?
-              
-                <StyledTableRow key={main?.data.id}>
+                educations?.data.data.map((edu)=>(
+
+
+                <StyledTableRow key={edu?.id}>
                   
                   <StyledTableCell align='center' component="th" scope="row">
-                    {main?.data.id}
+                    {edu?.id}
                   </StyledTableCell>
-                  <StyledTableCell align="center">{main?.data.title}</StyledTableCell>
-                  <StyledTableCell align="center">{main?.data.description}</StyledTableCell>
-              
-              
+                  <StyledTableCell align="center">{edu?.educationName}</StyledTableCell>
+                  <StyledTableCell align="center">{Date.parse( ` ${ edu.startDate}`)}</StyledTableCell>
+                  <StyledTableCell align="center">{Date.parse(` ${ edu.endDate}`)}</StyledTableCell>
+                  <StyledTableCell align="center">{`${edu?.description}`}</StyledTableCell>
+                     
                 
                
                         <StyledTableCell align="center">
    {
-    main?.data.id!=null?
-    <button onClick={()=>MainDelete(main?.data.id)} className=" mx-3 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+    edu?.id!=null?
+    <button onClick={()=>EducationDelete(edu?.id)} className=" mx-3 bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
       Delete
     </button>
     :null
    }                     
-    <Link href={`/dashboard/main/updatemain`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
+    <Link href={`/dashboard/education/updateeducation/${edu.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
       Edit
     </Link>
                         </StyledTableCell>
                 </StyledTableRow>
-              :null
-              
+                ))
              }
          
             </TableBody>
@@ -245,4 +252,4 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
   )
 }
 
-export default MainTable
+export default EducationTable

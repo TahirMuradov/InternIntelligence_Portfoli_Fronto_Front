@@ -6,7 +6,7 @@ import { signOut, useSession } from "next-auth/react";
 import Loader from "@/components/common/loader";
 
 
-const AddMainForm:React.FC<{apiDomen:string|undefined}>=({
+const AddSkillForm:React.FC<{apiDomen:string|undefined}>=({
     apiDomen,
     
 })=>{
@@ -21,15 +21,15 @@ const AddMainForm:React.FC<{apiDomen:string|undefined}>=({
        SetLoader(true)
        const form = new FormData(e.currentTarget);       
   
-       fetch(`${apiDomen}api/Main/AddMain`, {
+       fetch(`${apiDomen}api/Skill/AddSkill`, {
            method:'POST',
            headers: {
             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
 
            body:JSON.stringify({
-title:form.get("title"),
-description:form.get("description"),
+            skillName:form.get("skillName"),
+            isBackend: form.get("isBackend")=="on"?true:false
            }) ,
        })
        .then(response => {
@@ -61,7 +61,7 @@ description:form.get("description"),
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Main created successfully!',
+                    text: 'Skill created successfully!',
                     icon: 'success',
                     confirmButtonText: 'Cool',
                     allowEnterKey:true,
@@ -71,7 +71,7 @@ description:form.get("description"),
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
-                router.push("/dashboard/main")
+                router.push("/dashboard/skill/1")
                     }
                 });
             } else {
@@ -130,12 +130,12 @@ description:form.get("description"),
         {/* Full Name */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-            Title:
+          Skill Name:
             </label>
             <input
-                placeholder="Title"
+                placeholder="Skill Name"
                 type="text"
-                name="title"
+                name="skillName"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
                           dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
@@ -144,25 +144,12 @@ description:form.get("description"),
             />
         </div>
 
-        {/* Description */}
+        {/* isBackend */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Description:
-            </label>
-            <input
-                placeholder="Main Description"
-                type="text"
-                name="description"
-               
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
-                          focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 
-                          dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 
-                          dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                required
-            />
+        <input id="isfeatured" name="isBackend" type="checkbox"  className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+        <label htmlFor="isfeatured" className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Is Backend</label>
         </div>
-
-    
+     
     </div>
 
     <button
@@ -178,4 +165,4 @@ description:form.get("description"),
 }
 
 
-export default AddMainForm
+export default AddSkillForm

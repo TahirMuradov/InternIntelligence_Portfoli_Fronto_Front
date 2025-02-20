@@ -36,7 +36,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
  
-          // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+          process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
       
           const apiDomen = process.env.apiDomen;
        console.error(apiDomen)
@@ -58,7 +58,7 @@ const handler = NextAuth({
 
             const result: Result<LoginResponseType> = await res.json();
           
-            const userData: DecodedLoginApiTokenResult = jwt.decode(result.response.accessToken) as DecodedLoginApiTokenResult;
+            const userData: DecodedLoginApiTokenResult = jwt.decode(result.data.accessToken) as DecodedLoginApiTokenResult;
 
            
             return {
@@ -69,8 +69,8 @@ const handler = NextAuth({
               firstName: userData.FirstName , 
               lastName: userData.LastName , 
               role: userData.Roles ,
-              token: result.response.accessToken,
-              refreshToken: result.response.refreshToken,
+              token: result.data.accessToken,
+              refreshToken: result.data.refreshToken,
             } as User;
           } else if (res.status!==401){
             const result:Result<null>=await res.json();
