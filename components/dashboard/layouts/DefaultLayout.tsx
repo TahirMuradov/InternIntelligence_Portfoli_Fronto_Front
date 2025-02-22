@@ -4,12 +4,14 @@ import user from "../../../public/dashboard/product-1.jpg"
 import Image from "next/image";
 import Link from "next/link";
 import WebIcon from '@mui/icons-material/Web';
+import { signOut, useSession } from "next-auth/react";
 
 export default function DefaultLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+   const session=useSession();
    const [isUserDropdownOpen, setUserDropdownOpen] = useState<boolean>(false);
   const [isCategoryDropDown,SetCategoryDropdown]=useState<boolean>(false);
   const [barsClick,setbarsClick]=useState<boolean>(false)
@@ -18,6 +20,7 @@ export default function DefaultLayout({
   const[education,SetEducation]=useState<boolean>(false);
   const[project,SetProject]=useState<boolean>(false);
   const[skill,SetSkill]=useState<boolean>(false);
+
 
   
   return (
@@ -60,22 +63,15 @@ export default function DefaultLayout({
 >
               <div className="px-4 py-3 dark:text-slate-400 dark:bg-slate-800" role="none">
                 <span className="text-sm block" role="none">
-                  Neil Sims
+                {session.data?.user.username}
                 </span>
-                 neil.sims@flowbite.com
+                {session.data?.user.email}
                  </div>
               <ul className="py-1" role="none">
+              
+              
                 <li>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Dashboard</a>
-                </li>
-                <li>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Settings</a>
-                </li>
-                <li>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Earnings</a>
-                </li>
-                <li>
-                  <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</a>
+                  <button onClick={()=>signOut()} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</button>
                 </li>
               </ul>
             </div>
@@ -223,7 +219,7 @@ export default function DefaultLayout({
 
 </li>
          <li>
-            <Link href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <Link href="/dashboard/contactme/1" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                <svg className="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                   <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
                </svg>

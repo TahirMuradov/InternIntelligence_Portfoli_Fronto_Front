@@ -1,14 +1,15 @@
-import EducationTable from '@/components/dashboard/education/EducationTable'
-import React from 'react'
+import EducationTable from "@/components/dashboard/education/EducationTable"
 
-const page:React.FC<{ params: {page:number } }> = ({params:{page}}) => {
+
+export default async  function  page ({
+    params,
+  }: {
+    params: Promise<{ page: number }>
+  }){
+let {page}=await params
+if (page<1)page=1
     const apiDomen = process.env.apiDomen;
-    if (page<1) {
-        page=1
-    }
-    return (
-    <EducationTable page={page} apiDomen={apiDomen}/>
-  )
+    return(
+        <EducationTable page={page} apiDomen={apiDomen}/>
+    )
 }
-
-export default page

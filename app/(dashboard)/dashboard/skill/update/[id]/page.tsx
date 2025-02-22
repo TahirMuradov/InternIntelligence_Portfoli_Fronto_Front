@@ -1,11 +1,15 @@
 import UpdateSkillForm from '@/components/dashboard/skill/UpdateSkillForm';
 import React from 'react'
 
-const page:React.FC<{ params: { id:string } }> = ({params:{id}}) => {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}){
+  const{id}=await params;
     const apiDomen = process.env.apiDomen;
   return (
    <UpdateSkillForm apiDomen={apiDomen}id={id}/>
   )
 }
 
-export default page

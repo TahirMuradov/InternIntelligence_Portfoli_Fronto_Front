@@ -1,7 +1,12 @@
 import UpdateProjectForm from '@/components/dashboard/project/UpdateProjectForm'
 import React from 'react'
 
-const page:React.FC<{ params: {id:string } }> = ({params:{id}}) => {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+const{id}=await params;
     const apiDomen = process.env.apiDomen;
 
   return (
@@ -9,4 +14,3 @@ const page:React.FC<{ params: {id:string } }> = ({params:{id}}) => {
   )
 }
 
-export default page
