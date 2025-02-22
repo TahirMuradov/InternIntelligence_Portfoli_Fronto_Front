@@ -9,7 +9,7 @@ import Loader from "@/components/common/loader";
 import GetSkillDetail from "@/types/SkillTypes/GetSkillDetail";
 
 
-const UpdateProjectForm:React.FC<{id:string,apiDomen:string|undefined}>=({
+const UpdateSkillForm:React.FC<{id:string,apiDomen:string|undefined}>=({
     apiDomen,
     id
 })=>{
@@ -280,4 +280,4 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
 }
 
 
-export default UpdateProjectForm
+export default UpdateSkillForm

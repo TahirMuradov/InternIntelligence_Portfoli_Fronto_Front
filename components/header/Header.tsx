@@ -4,11 +4,15 @@ import style from "../header/header.module.scss"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useRef } from 'react'
 import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons'
-
+import PersonIcon from '@mui/icons-material/Person';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 const Header: React.FC = () => {
   const nav = useRef<HTMLDivElement | null>(null);
-
+const session=useSession();
   const updateScrollCompletion = () => {
+
     const currentProgress = window.scrollY;
     const scrollHeight = document.body.scrollHeight - window.innerHeight;
 
@@ -57,8 +61,20 @@ const Header: React.FC = () => {
                 </li>
               </ul>
             </div>
-            <div className="navbar_icon cursor-pointer" onClick={navBar_Toggle}>
-              <FontAwesomeIcon icon={faBars} className='p-4 text-[23px] text-white' />
+            <div className="navbar_icon flex items-center" >
+              <FontAwesomeIcon onClick={navBar_Toggle} icon={faBars} className='p-4 text-[23px] text-white cursor-pointer' />
+            <div >
+              {
+session.status=="authenticated"? 
+<Link href={"/dashboard/main"}>
+<DashboardIcon className='text-white cursor-pointer'/>
+</Link>
+:
+              <Link href={"/auth/login"}>
+              <PersonIcon className='text-white cursor-pointer'/>
+              </Link>
+              }
+            </div>
             </div>
           </div>
         </div>

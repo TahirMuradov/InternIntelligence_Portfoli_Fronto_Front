@@ -40,7 +40,7 @@ const ProjectTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) =
   
     useEffect(()=>{
     
-      fetch(`${apiDomen}api/Education/GetEducationForTable?page=${page}`, {
+      fetch(`${apiDomen}api/Project/GetProjectForTable?page=${page}`, {
         headers: {
            'Authorization':`Bearer ${sessions.data?.user.token}`,
         },
@@ -162,7 +162,7 @@ const ProjectTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) =
               }).then((res) => {
                   if (res.isConfirmed) {
                     SetLoader(false)
-                    fetch(`${apiDomen}api/Education/GetEducationForTable?page=${page}`, {
+                    fetch(`${apiDomen}api/Project/GetProjectForTable?page=${page}`, {
                       headers: {
                       
                         'Authorization':`Bearer ${sessions.data?.user.token}`,
@@ -182,7 +182,7 @@ const ProjectTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) =
               if (res.isConfirmed) {
                 SetLoader(false)
                 router.refresh();
-                  router.push("/dashboard/project/1")// Clear the form
+                  router.push("/dashboard/project/1")
               }
           })
           }
@@ -235,7 +235,7 @@ const ProjectTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) =
     </button>
     :null
    }                     
-    <Link href={`/dashboard/project/updateproject/${project.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
+    <Link href={`/dashboard/project/update/${project.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
       Edit
     </Link>
                         </StyledTableCell>

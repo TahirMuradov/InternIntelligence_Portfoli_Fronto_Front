@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, } from "react";
-// import logo from "../../public/İSTANBUL.png"
 import user from "../../../public/dashboard/product-1.jpg"
 import Image from "next/image";
 import Link from "next/link";
 import WebIcon from '@mui/icons-material/Web';
+
 export default function DefaultLayout({
   children,
 }: {
@@ -15,6 +15,10 @@ export default function DefaultLayout({
   const [barsClick,setbarsClick]=useState<boolean>(false)
   const [main,setMain]=useState<boolean>(false)
   const [aboutme,setAboutMe]=useState<boolean>(false)
+  const[education,SetEducation]=useState<boolean>(false);
+  const[project,SetProject]=useState<boolean>(false);
+  const[skill,SetSkill]=useState<boolean>(false);
+
   
   return (
     <>
@@ -147,6 +151,72 @@ export default function DefaultLayout({
          </li>
          <li>
             <Link href="/dashboard/aboutme/aboutmecreate" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Aboutme Create</Link>
+         </li>
+      
+   </ul>
+
+</li>
+<li>
+
+<button onClick={()=>SetEducation(!education)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+<WebIcon/>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Education</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${education?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/education/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Education Table</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/education/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Education Create</Link>
+         </li>
+      
+   </ul>
+
+</li>
+<li>
+
+<button onClick={()=>SetProject(!project)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+<WebIcon/>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Project</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${project?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/project/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Project Table</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/project/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Project Create</Link>
+         </li>
+      
+   </ul>
+
+</li>
+<li>
+
+<button onClick={()=>SetSkill(!skill)} type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-example" data-collapse-toggle="dropdown-example">
+<WebIcon/>
+
+
+         <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">Skill</span>
+         <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
+         </svg>
+   </button>
+   <ul id="dropdown-example" className={`${skill?"":"hidden"} py-2 space-y-2`}>
+         <li>
+            <Link href="/dashboard/skill/1" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Skill Table</Link>
+         </li>
+         <li>
+            <Link href="/dashboard/skill/create" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Skill Create</Link>
          </li>
       
    </ul>

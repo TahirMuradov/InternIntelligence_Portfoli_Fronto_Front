@@ -10,12 +10,16 @@ export async function middleware(request: NextRequest) {
 
 let pathname:string[]=request.nextUrl.pathname.split("/");
 
-    if ((pathname[2]=="login"||
-      pathname[2]=="register"||
-      pathname[2]=="forgotpassword"||
-      pathname[2]=="emailconfirmed"
-    )&&token) {
+    if ((
+      pathname[1]=="auth"
+        )&&token) {
       return NextResponse.redirect(new URL('/', request.url));
+    }
+    if((
+      pathname[1]=="dashboard"
+      )&&!token){
+      return NextResponse.redirect(new URL('/auth/login', request.url));
+
     }
 
 }
