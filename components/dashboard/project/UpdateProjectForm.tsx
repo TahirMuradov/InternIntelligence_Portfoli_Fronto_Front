@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {  useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { signOut, useSession } from "next-auth/react";
-import Loader from "@/components/common/loader";
+import Loader from "@/components/common/loader/Loader";
 import GetProjectDetail from "@/types/ProjectTypes/GetProjectDetail";
 
 

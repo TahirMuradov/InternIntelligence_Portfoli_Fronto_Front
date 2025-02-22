@@ -2,7 +2,7 @@
 import "../globals.css"
 import { useEffect, useState } from "react";
 import DefaultLayout from "@/components/dashboard/layouts/DefaultLayout";
-import Loader from "@/components/common/loader";
+import Loader from "@/components/common/loader/Loader";
 import Provider from "../Provider";
 
 export default function DashboardLayout({

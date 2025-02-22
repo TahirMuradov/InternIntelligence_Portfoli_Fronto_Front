@@ -4,7 +4,7 @@ import Result from "@/types/ApiResultType";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import Loader from "../../common/loader/index";
+import Loader from "../../common/loader/Loader";
 import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";

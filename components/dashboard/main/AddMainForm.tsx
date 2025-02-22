@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import { signOut, useSession } from "next-auth/react";
-import Loader from "@/components/common/loader";
+import Loader from "@/components/common/loader/Loader";
 
 
 const AddMainForm:React.FC<{apiDomen:string|undefined}>=({
