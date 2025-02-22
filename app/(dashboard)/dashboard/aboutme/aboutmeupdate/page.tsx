@@ -1,10 +1,10 @@
-import AboutMeUpdateForm from "@/components/dashboard/aboutMe/UpdateAboutMeForm"
+import UpdateAboutMeForm from "../../../../../components/dashboard/aboutMe/UpdateAboutMeForm";
 
 
 const page = () => {
     const apiDomen = process.env.apiDomen;
   return (
-   <AboutMeUpdateForm apiDomen={apiDomen}/>
+   <UpdateAboutMeForm apiDomen={apiDomen}/>
   )
 }
 

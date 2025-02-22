@@ -4,8 +4,6 @@ import Result from "@/types/ApiResultType"
 import { useRouter } from "next/navigation";
 import {  useEffect, useState } from "react";
 import Swal from "sweetalert2";
-
-
 import { signOut, useSession } from "next-auth/react";
 import GetAboutMeDetailDTO from "@/types/AboutMeTypes/GetAboutMeDetailDTO";
 import Loader from "@/components/common/loader/Loader";

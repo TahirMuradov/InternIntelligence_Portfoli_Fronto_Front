@@ -1,10 +1,11 @@
-import CreateAboutMeForm from "@/components/dashboard/aboutMe/CreateAboutMeForm";
+import AddMainForm from "../../../../../components/dashboard/main/AddMainForm";
+
 
 
 const page = () => {
     const apiDomen = process.env.apiDomen;
   return (
-    <CreateAboutMeForm apiDomen={apiDomen}/>
+    <AddMainForm apiDomen={apiDomen}/>
   )
 }
 

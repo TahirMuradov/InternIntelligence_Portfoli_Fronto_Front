@@ -1,4 +1,5 @@
-import AboutMeTable from "@/components/dashboard/aboutMe/AboutMeTable"
+import AboutMeTable from "../../../../components/dashboard/aboutMe/AboutMeTable";
+
 
 const page = () => {
     const apiDomen = process.env.apiDomen;
