@@ -1,4 +1,4 @@
-import CreateAboutMeForm from "@/components/dashboard/aboutMe/AboutMeCreate";
+import CreateAboutMeForm from "@/components/dashboard/aboutMe/CreateAboutMeForm";
 
 
 const page = () => {

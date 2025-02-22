@@ -1,10 +1,10 @@
-import AboutMeCreate from '@/components/dashboard/aboutMe/AboutMeCreate';
+import CreateAboutMeForm from '@/components/dashboard/aboutMe/CreateAboutMeForm';
 import React from 'react'
 
 const page = () => {
     const apiDomen = process.env.apiDomen;
   return (
-    <AboutMeCreate apiDomen={apiDomen}/>
+    <CreateAboutMeForm apiDomen={apiDomen}/>
   )
 }
 
