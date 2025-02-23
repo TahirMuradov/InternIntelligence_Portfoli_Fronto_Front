@@ -65,8 +65,6 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
             
             if (result.isSuccess) {
           SetAboutMe(result)
-          
-       
          
             } else {
               let errors = "<ul>";
