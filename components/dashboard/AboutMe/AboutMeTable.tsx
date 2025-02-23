@@ -46,57 +46,92 @@ const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
         },
         cache:"no-store",
         method: "GET",
-      }).then(res=>{
+      })
+      .then(response => {
+        if (response.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
+        }
+        
+        return response.json()
+    })
+       .then(result => {
+        
+        if (result) {
+            if (result.isSuccess) {
+              SetAboutMes(result)
+            }
+            if (!result.isSuccess) {
+  
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+        
+              Object.keys(result.errors).forEach((key) => {
+                result.errors[key].forEach((message: string) => {
+                                            errors += `<li>${message}</li>`;
+                });
+            });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                     SetAboutMes(null);
+                     router.refresh();
+                 }
+             });
+            }
 
-        if(res.status==401){ 
+        }
 
-          Swal.fire({
-            title: 'Authorization Error!',
-            text: 'Your session has expired. Please log in again.',
-            icon: 'info',
-            confirmButtonText: 'Login',
-             allowEscapeKey:false,
-             allowOutsideClick:false                     
-        }).then(res => {
-            if (res.isConfirmed) {
-                signOut(); 
-                SetLoader(false);
+       })
+       .catch(error => {
+           Swal.fire({
+               title: 'Error!',
+               text: `An unexpected error occurred!${error}`,
+               icon: 'error',
+               confirmButtonText: 'Cool',
+               allowEnterKey:false,
+               allowOutsideClick:false
+           }).then((x)=>{
+            if(x.isConfirmed){
+SetAboutMes(null)
+                SetLoader(false)
+             
                 router.refresh();
             }
-        });
-        return;
-        }
-      else if(!res.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool',
-          allowEscapeKey:false,
-          allowOutsideClick:false
-        }
-     
-    ).then(x=>{
-        if (x.isConfirmed) {
-                      SetLoader(false)
-       signOut()
-    
-        }
-      });
-      return;
-      }
-        return    res.json();
-      }
-        
-    
-    ).then(x=>{
-      if (x) {
-   
-          SetAboutMes(x)
-        console.log(x)
-     
-      }
-    });
+           });
+       });
     },[])
      const [loader,SetLoader]=useState<boolean>(false)
       function AboutMeDelete(id:string){
@@ -106,10 +141,8 @@ const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
           'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
-        }).then(response=>{
-          
-     
-            if (response.status==401) {
+        })  .then(response => {
+          if (response.status==401) {
               Swal.fire({
                   title: 'Authorization Error!',
                   text: 'Your session has expired. Please log in again.',
@@ -125,66 +158,96 @@ const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
                   }
               });
               return;
-          }else if(!response.ok){
-            Swal.fire({
-              title: 'Error!',
-              text: 'An unexpected error occurred!',
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then(x=>{
-            if (x.isConfirmed) {
-              
-                SetLoader(false)
-
-           signOut()
-              router.refresh();
-            }
-          });
-         return ;
-        }
-
-    
+          }
+          
           return response.json()
-        })
-        .then(responsData=>{
-          if (responsData) {
-            
-            if (responsData.isSuccess) {
-              Swal.fire({
-                  title: 'Success!',
-                  text: 'AboutMe  delete successfully!',
-                  icon: 'success',
-                  confirmButtonText: 'Cool'
-              }).then((res) => {
-                  if (res.isConfirmed) {
-                    SetLoader(false)
-                    fetch(`${apiDomen}api/Aboutme/GetAboutMeForUI`, {
-                      headers: {
-                      
-                        'Authorization':`Bearer ${sessions.data?.user.token}`,
-                      },
-                      cache:"no-store",
-                      method: "GET",
-                    }).then(res=>res.json()).then(x=>SetAboutMes(x));
-                      router.refresh();
-                  }
-              })
-          }else{
-            Swal.fire({
-              title: 'Error!',         
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then((res) => {
-              if (res.isConfirmed) {
-                SetLoader(false)
-                router.refresh();
-                  router.push("/dashboard/aboutme")// Clear the form
-              }
-          })
-          }
-          }
-      
       })
+         .then(result => {
+          if (result) {
+              
+              if (result.isSuccess) {
+                  Swal.fire({
+                      title: 'Success!',
+                      text: 'AboutMe delete successfully!',
+                      icon: 'success',
+                      confirmButtonText: 'Cool',
+                      allowEscapeKey:false,
+                      allowOutsideClick:false
+                  }).then((res) => {
+                      if (res.isConfirmed) {
+                 
+                        SetAboutMes(prevAboutMes => {
+                          if (!prevAboutMes) return null;
+                  
+                          return {
+                              ...prevAboutMes,
+                              data: {
+                                  ...prevAboutMes.data,
+                                  data: null
+                              }
+                          };
+                      });
+                        SetLoader(false)                
+                 
+                      }
+                  });
+              } else {
+    
+               let errors = "<ul>";
+               if (Array.isArray(result.messages)) {
+               
+                   result.messages.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+               } else if (result.message) {
+                
+                   errors += `<li>${result.message}</li>`;
+               }
+               else if(result.errors){
+             
+                Object.keys(result.errors).forEach((key) => {
+                  result.errors[key].forEach((message: string) => {
+                                              errors += `<li>${message}</li>`;
+                  });
+              });
+               }
+               errors += "</ul>";
+       
+               Swal.fire({
+                   title: 'Error!',
+                   html: errors, 
+                   icon: 'error',
+                   confirmButtonText: 'Cool',
+                   allowEscapeKey:false,
+                   allowOutsideClick:false
+               }).then(res => {
+                   if (res.isConfirmed) {
+                       SetLoader(false);
+                       router.refresh();
+                   }
+               });
+              }
+  
+          }
+  
+         })
+         .catch(error => {  
+             Swal.fire({
+                 title: 'Error!',
+                 text: `An unexpected error occurred!${error}`,
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEnterKey:false,
+                 allowOutsideClick:false
+             }).then((x)=>{
+              if(x.isConfirmed){
+  
+                  SetLoader(false)
+               
+                  router.refresh();
+              }
+             });
+         });
         
         ;
       }
@@ -214,7 +277,10 @@ const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
               </TableRow>
             </TableHead>
             <TableBody>
-             
+             {
+              aboutMes?
+              
+              
                 <StyledTableRow key={aboutMes?.data.id}>
                   
                   <StyledTableCell align='center' component="th" scope="row">
@@ -226,8 +292,29 @@ const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
                   <StyledTableCell align="center">{`${aboutMes?.data.adress}`}</StyledTableCell>
                   <StyledTableCell align="center">{`${aboutMes?.data.phoneNumber}`}</StyledTableCell>
                   <StyledTableCell align="center">{`${aboutMes?.data.email}`}</StyledTableCell>
-                  <StyledTableCell align="center">{`${aboutMes?.data.photoUrl}`}</StyledTableCell>
-                  <StyledTableCell align="center">{`${aboutMes?.data.cvUrl}`}</StyledTableCell>
+                  <StyledTableCell align="center">
+  {aboutMes?.data.photoUrl && (
+    <img
+      src={apiDomen+aboutMes.data.photoUrl}
+      alt="Profile Photo"
+      style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+    />
+  )}
+</StyledTableCell>
+<StyledTableCell align="center">
+  {aboutMes?.data.cvUrl ? (
+    <a
+      href={apiDomen+aboutMes.data.cvUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block mx-3 bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded"
+    >
+      View CV
+    </a>
+  ) : (
+    <span className="text-gray-500">No CV</span>
+  )}
+</StyledTableCell>
               
                 
                
@@ -244,6 +331,8 @@ const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
     </Link>
                         </StyledTableCell>
                 </StyledTableRow>
+              :null
+             }
          
             </TableBody>
           </Table>

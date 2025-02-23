@@ -36,67 +36,100 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
     const[main,Setmain]=useState<Result<GetMainDetail>|null>(null);
     const router=useRouter();
     const sessions=useSession();
-  
+  function  GetData(){
+    fetch(`${apiDomen}api/Main/GetMainForTable`, {
+      headers: {
+         'Authorization':`Bearer ${sessions.data?.user.token}`,
+      },
+      cache:"no-store",
+      method: "GET",
+    })
+    .then(response => {
+      if (response.status==401) {
+          Swal.fire({
+              title: 'Authorization Error!',
+              text: 'Your session has expired. Please log in again.',
+              icon: 'info',
+              confirmButtonText: 'Login',
+               allowEscapeKey:false,
+               allowOutsideClick:false                     
+          }).then(res => {
+              if (res.isConfirmed) {
+                  signOut(); 
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
+          return;
+      }
+      
+      return response.json()
+  })
+     .then(result => {
+      if (result) {
+          if(result.isSuccess){
+            
+            Setmain(result)
+          }
+          if (!result.isSuccess) {
+
+           let errors = "<ul>";
+           if (Array.isArray(result.messages)) {
+           
+               result.messages.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+           } else if (result.message) {
+            
+               errors += `<li>${result.message}</li>`;
+           }
+           else if(result.errors){
+              result.errors.Description.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+           }
+           errors += "</ul>";
+   
+           Swal.fire({
+               title: 'Error!',
+               html: errors, 
+               icon: 'error',
+               confirmButtonText: 'Cool',
+               allowEscapeKey:false,
+               allowOutsideClick:false
+           }).then(res => {
+               if (res.isConfirmed) {
+                   SetLoader(false);
+                   router.refresh();
+               }
+           });
+          }
+
+      }
+
+     })
+     .catch(error => {
+         Swal.fire({
+             title: 'Error!',
+             text: `An unexpected error occurred!${error}`,
+             icon: 'error',
+             confirmButtonText: 'Cool',
+             allowEnterKey:false,
+             allowOutsideClick:false
+         }).then((x)=>{
+          if(x.isConfirmed){
+
+              SetLoader(false)
+           
+              router.refresh();
+          }
+         });
+     });
+  }
     useEffect(()=>{
     
-      fetch(`${apiDomen}api/Main/GetMainForTable`, {
-        headers: {
-           'Authorization':`Bearer ${sessions.data?.user.token}`,
-        },
-        cache:"no-store",
-        method: "GET",
-      }).then(res=>{
-
-        if(res.status==401){ 
-
-          Swal.fire({
-            title: 'Authorization Error!',
-            text: 'Your session has expired. Please log in again.',
-            icon: 'info',
-            confirmButtonText: 'Login',
-             allowEscapeKey:false,
-             allowOutsideClick:false                     
-        }).then(res => {
-            if (res.isConfirmed) {
-                signOut(); 
-                SetLoader(false);
-                router.refresh();
-            }
-        });
-        return;
-        }
-      else if(!res.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool',
-          allowEscapeKey:false,
-          allowOutsideClick:false
-        }
-     
-    ).then(x=>{
-        if (x.isConfirmed) {
-                      SetLoader(false)
-       signOut()
-    
-        }
-      });
-      return;
-      }
-        return    res.json();
-      }
-        
-    
-    ).then(x=>{
-      if (x) {
+   GetData()
    
-          Setmain(x)
-        console.log(x)
-     
-      }
-    });
-    console.log(main)
     },[])
      const [loader,SetLoader]=useState<boolean>(false)
       function MainDelete(id:string){
@@ -106,84 +139,102 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
           'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
-        }).then(response=>{
-          
-     
-            if (response.status==401) {
-              Swal.fire({
-                  title: 'Authorization Error!',
-                  text: 'Your session has expired. Please log in again.',
-                  icon: 'info',
-                  confirmButtonText: 'Login',
-                   allowEscapeKey:false,
-                   allowOutsideClick:false                     
-              }).then(res => {
-                  if (res.isConfirmed) {
-                      signOut(); 
-                      SetLoader(false);
-                      router.refresh();
-                  }
-              });
-              return;
-          }else if(!response.ok){
-            Swal.fire({
-              title: 'Error!',
-              text: 'An unexpected error occurred!',
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then(x=>{
-            if (x.isConfirmed) {
-              
-                SetLoader(false)
-
-           signOut()
-              router.refresh();
-            }
-          });
-         return ;
-        }
-
-    
-          return response.json()
         })
-        .then(responsData=>{
-          if (responsData) {
-            
-            if (responsData.isSuccess) {
-              Swal.fire({
-                  title: 'Success!',
-                  text: 'Main  delete successfully!',
-                  icon: 'success',
-                  confirmButtonText: 'Cool'
-              }).then((res) => {
-                  if (res.isConfirmed) {
-                    SetLoader(false)
-                    fetch(`${apiDomen}api/Main/GetMainForTable`, {
-                      headers: {
-                                            'Authorization':`Bearer ${sessions.data?.user.token}`,
-                      },
-                      cache:"no-store",
-                      method: "GET",
-                    }).then(res=>res.json()).then(x=>Setmain(x));
+        .then(response => {
+              if (response.status==401) {
+                  Swal.fire({
+                      title: 'Authorization Error!',
+                      text: 'Your session has expired. Please log in again.',
+                      icon: 'info',
+                      confirmButtonText: 'Login',
+                       allowEscapeKey:false,
+                       allowOutsideClick:false                     
+                  }).then(res => {
+                      if (res.isConfirmed) {
+                          signOut(); 
+                          SetLoader(false);
+                          router.refresh();
+                      }
+                  });
+                  return;
+              }
+              
+              return response.json()
+          })
+             .then(result => {
+              if (result) {
+                  
+                  if (result.isSuccess) {
+                      Swal.fire({
+                          title: 'Success!',
+                          text: 'Main successfully!',
+                          icon: 'success',
+                          confirmButtonText: 'Cool',
+                          allowEscapeKey:false,
+                          allowOutsideClick:false
+                      }).then((res) => {
+                          if (res.isConfirmed) {
+                            Setmain(null);
+                            SetLoader(false)                
+                   
+                          }
+                      });
+                  } else  {
+        
+                   let errors = "<ul>";
+                   if (Array.isArray(result.messages)) {
+                   
+                       result.messages.forEach((message:string)=> {
+                           errors += `<li>${message}</li>`;
+                       });
+                   } else if (result.message) {
+                    
+                       errors += `<li>${result.message}</li>`;
+                   }
+                   else if(result.errors){
+                    Object.keys(result.errors).forEach((key) => {
+                      result.errors[key].forEach((message: string) => {
+                                                  errors += `<li>${message}</li>`;
+                      });
+                  });
+                   }
+                   errors += "</ul>";
+           
+                   Swal.fire({
+                       title: 'Error!',
+                       html: errors, 
+                       icon: 'error',
+                       confirmButtonText: 'Cool',
+                       allowEscapeKey:false,
+                       allowOutsideClick:false
+                   }).then(res => {
+                       if (res.isConfirmed) {
+                           SetLoader(false);
+                           router.refresh();
+                       }
+                   });
+                  }
+      
+              }
+      
+             })
+             .catch(error => {
+                 Swal.fire({
+                     title: 'Error!',
+                     text: `An unexpected error occurred!${error}`,
+                     icon: 'error',
+                     confirmButtonText: 'Cool',
+                     allowEnterKey:false,
+                     allowOutsideClick:false
+                 }).then((x)=>{
+                  if(x.isConfirmed){
+      
+                      SetLoader(false)
+                   
                       router.refresh();
                   }
-              })
-          }else{
-            Swal.fire({
-              title: 'Error!',         
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then((res) => {
-              if (res.isConfirmed) {
-                SetLoader(false)
-                router.refresh();
-                  router.push("/dashboard/main")// Clear the form
-              }
-          })
-          }
-          }
-      
-      })
+                 });
+             });
         
         ;
       }
@@ -230,7 +281,7 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
     </button>
     :null
    }                     
-    <Link href={`/dashboard/main/updatemain`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
+    <Link href={`/dashboard/main/mainupdate`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
       Edit
     </Link>
                         </StyledTableCell>

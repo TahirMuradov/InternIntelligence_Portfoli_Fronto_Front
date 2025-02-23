@@ -42,19 +42,6 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
                                         }
                 });
                 return ;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                     SetLoader(false)      
-                 signOut()
-                    }
-                });
-                return ;
             }
      
         
@@ -68,31 +55,36 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
        
          
             } else {
-              let errors = "<ul>";
-              if (Array.isArray(result.messages)) {
-              
-                  result.messages.forEach((message:string)=> {
-                      errors += `<li>${message}</li>`;
-                  });
-              } else if (result.message) {
-               
-                  errors += `<li>${result.message}</li>`;
-              }
-              errors += "</ul>";
-      
-              Swal.fire({
-                  title: 'Error!',
-                  html: errors, 
-                  icon: 'error',
-                  confirmButtonText: 'Cool',
-                  allowEscapeKey:false,
-                  allowOutsideClick:false
-              }).then(res => {
-                  if (res.isConfirmed) {
-                      SetLoader(false);
-                     router.refresh();
-                  }
-              });
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+                   result.errors.Description.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
             }
         }
       })
@@ -117,6 +109,7 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
        fetch(`${apiDomen}api/Skill/UpdateSkill`, {
            method:'PUT',
            headers: {
+            'Content-Type': 'application/json',
                           'Authorization':`Bearer ${sessions.data?.user.token}`
             },
            body:JSON.stringify({
@@ -143,22 +136,6 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowOutsideClick:false,
-                allowEscapeKey:false
-            }).then(x=>{
-              if (x.isConfirmed) {
-                 SetLoader(false)  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
         return response.json()
     })
@@ -180,32 +157,36 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
                     }
                 });
             } else {
-    
-             let errors = "<ul>";
-             if (Array.isArray(result.messages)) {
-             
-                 result.messages.forEach((message:string)=> {
-                     errors += `<li>${message}</li>`;
-                 });
-             } else if (result.message) {
-              
-                 errors += `<li>${result.message}</li>`;
-             }
-             errors += "</ul>";
-     
-             Swal.fire({
-                 title: 'Error!',
-                 html: errors, 
-                 icon: 'error',
-                 confirmButtonText: 'Cool',
-                 allowEscapeKey:false,
-                 allowOutsideClick:false
-             }).then(res => {
-                 if (res.isConfirmed) {
-                     SetLoader(false);
-                     router.refresh();
-                 }
-             });
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+                   result.errors.Description.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
             }
         }
        })

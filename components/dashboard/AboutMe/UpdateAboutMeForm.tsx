@@ -25,90 +25,86 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
                          'Authorization':`Bearer ${sessions.data?.user.token}`
           }
       })
-      .then(response =>{ 
-        
-  
-            if (response.status==401) {
-                Swal.fire({
-                    title: 'Authorization Error!',
-                    text: 'Your session has expired. Please log in again.',
-                    icon: 'info',
-                    confirmButtonText: 'Login',
-                     allowEscapeKey:false,
-                     allowOutsideClick:false                     
-                }).then(res => {
-                    if (res.isConfirmed) {
-                        signOut(); 
-                        SetLoader(false);
-                                        }
-                });
-                return ;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                     SetLoader(false)      
-                 signOut()
-                    }
-                });
-                return ;
-            }
-     
-        
-        return  response.json()})
-      .then(result => {
-        if (result) {
-            
-            if (result.isSuccess) {
-          SetAboutMe(result)
-          
-       
-         
-            } else {
-              let errors = "<ul>";
-              if (Array.isArray(result.messages)) {
-              
-                  result.messages.forEach((message:string)=> {
-                      errors += `<li>${message}</li>`;
-                  });
-              } else if (result.message) {
-               
-                  errors += `<li>${result.message}</li>`;
-              }
-              errors += "</ul>";
-      
-              Swal.fire({
-                  title: 'Error!',
-                  html: errors, 
-                  icon: 'error',
-                  confirmButtonText: 'Cool',
-                  allowEscapeKey:false,
-                  allowOutsideClick:false
-              }).then(res => {
-                  if (res.isConfirmed) {
-                      SetLoader(false);
-                     router.refresh();
-                  }
-              });
-            }
+      .then(response => {
+        if (response.status==401) {
+            Swal.fire({
+                title: 'Authorization Error!',
+                text: 'Your session has expired. Please log in again.',
+                icon: 'info',
+                confirmButtonText: 'Login',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false                     
+            }).then(res => {
+                if (res.isConfirmed) {
+                    signOut(); 
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
+            return;
         }
-      })
-      .catch(error => {
-      
-          Swal.fire({
-              title: 'Error!',
-              text: `An unexpected error occurred!${error}`,
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false,
+        
+        return response.json()
+    })
+       .then(result => {
+        if (result) {
+           
+            if (!result.isSuccess) {
+  
+             let errors = "<ul>";
+             if (Array.isArray(result.messages)) {
+             
+                 result.messages.forEach((message:string)=> {
+                     errors += `<li>${message}</li>`;
+                 });
+             } else if (result.message) {
+              
+                 errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+                Object.keys(result.errors).forEach((key) => {
+                    result.errors[key].forEach((message: string) => {
+                                                errors += `<li>${message}</li>`;
+                    });
+                });
+             }
+             errors += "</ul>";
+     
+             Swal.fire({
+                 title: 'Error!',
+                 html: errors, 
+                 icon: 'error',
+                 confirmButtonText: 'Cool',
+                 allowEscapeKey:false,
+                 allowOutsideClick:false
+             }).then(res => {
+                 if (res.isConfirmed) {
+                     SetLoader(false);
+                     router.refresh();
+                 }
+             });
+            }
 
-          });
-      });
+        }
+
+       })
+       .catch(error => {
+           Swal.fire({
+               title: 'Error!',
+               text: `An unexpected error occurred!${error}`,
+               icon: 'error',
+               confirmButtonText: 'Cool',
+               allowEnterKey:false,
+               allowOutsideClick:false
+           }).then((x)=>{
+            if(x.isConfirmed){
+
+                SetLoader(false)
+             
+                router.refresh();
+            }
+           });
+       });
       },[])
 
       function HandleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -144,21 +140,8 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                 SetLoader(false)  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
+        
         return response.json()
     })
        .then(result => {
@@ -167,17 +150,19 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Payment Method updated successfully!',
+                    text: 'About me create successfully!',
                     icon: 'success',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
-                router.push("/dashboard/paymentmethod/1")
+                router.push("/dashboard/aboutme")
                     }
                 });
             } else {
-    
+  
              let errors = "<ul>";
              if (Array.isArray(result.messages)) {
              
@@ -187,6 +172,13 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
              } else if (result.message) {
               
                  errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+                Object.keys(result.errors).forEach((key) => {
+                    result.errors[key].forEach((message: string) => {
+                                                errors += `<li>${message}</li>`;
+                    });
+                });
              }
              errors += "</ul>";
      
@@ -204,7 +196,9 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
                  }
              });
             }
+
         }
+
        })
        .catch(error => {
            Swal.fire({
@@ -212,11 +206,11 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
                text: `An unexpected error occurred!${error}`,
                icon: 'error',
                confirmButtonText: 'Cool',
-               allowEscapeKey:false,
+               allowEnterKey:false,
                allowOutsideClick:false
-           }).then(x=>{
-            if (x.isConfirmed) {
-                
+           }).then((x)=>{
+            if(x.isConfirmed){
+
                 SetLoader(false)
              
                 router.refresh();

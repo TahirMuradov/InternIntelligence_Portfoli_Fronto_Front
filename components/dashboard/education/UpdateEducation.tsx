@@ -117,6 +117,7 @@ const [education,SetEducation]=useState<Result<GetEducationDetail>|null>(null);
        fetch(`${apiDomen}api/Education/UpdateEducation`, {
            method:'PUT',
            headers: {
+            'Content-Type': 'application/json',
                           'Authorization':`Bearer ${sessions.data?.user.token}`
             },
            body:JSON.stringify({
@@ -144,22 +145,6 @@ const [education,SetEducation]=useState<Result<GetEducationDetail>|null>(null);
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowOutsideClick:false,
-                allowEscapeKey:false
-            }).then(x=>{
-              if (x.isConfirmed) {
-                 SetLoader(false)  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
         return response.json()
     })
@@ -182,31 +167,40 @@ const [education,SetEducation]=useState<Result<GetEducationDetail>|null>(null);
                 });
             } else {
     
-             let errors = "<ul>";
-             if (Array.isArray(result.messages)) {
-             
-                 result.messages.forEach((message:string)=> {
-                     errors += `<li>${message}</li>`;
-                 });
-             } else if (result.message) {
-              
-                 errors += `<li>${result.message}</li>`;
-             }
-             errors += "</ul>";
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+                    Object.keys(result.errors).forEach((key) => {
+                        result.errors[key].forEach((message: string) => {
+                                                    errors += `<li>${message}</li>`;
+                        });
+                    });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
      
-             Swal.fire({
-                 title: 'Error!',
-                 html: errors, 
-                 icon: 'error',
-                 confirmButtonText: 'Cool',
-                 allowEscapeKey:false,
-                 allowOutsideClick:false
-             }).then(res => {
-                 if (res.isConfirmed) {
-                     SetLoader(false);
-                     router.refresh();
-                 }
-             });
+            
             }
         }
        })

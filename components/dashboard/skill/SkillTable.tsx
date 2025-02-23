@@ -46,56 +46,90 @@ const SkillTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) => 
         },
         cache:"no-store",
         method: "GET",
-      }).then(res=>{
-
-        if(res.status==401){ 
-
+      })
+         .then(response => {
+        if (response.status==401) {
           Swal.fire({
-            title: 'Authorization Error!',
-            text: 'Your session has expired. Please log in again.',
-            icon: 'info',
-            confirmButtonText: 'Login',
-             allowEscapeKey:false,
-             allowOutsideClick:false                     
-        }).then(res => {
-            if (res.isConfirmed) {
-                signOut(); 
-                SetLoader(false);
-                router.refresh();
-            }
-        });
-        return;
-        }
-      else if(!res.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool',
-          allowEscapeKey:false,
-          allowOutsideClick:false
-        }
-     
-    ).then(x=>{
-        if (x.isConfirmed) {
-                      SetLoader(false)
-       signOut()
-    
-        }
-      });
-      return;
+              title: 'Authorization Error!',
+              text: 'Your session has expired. Please log in again.',
+              icon: 'info',
+              confirmButtonText: 'Login',
+               allowEscapeKey:false,
+               allowOutsideClick:false                     
+          }).then(res => {
+              if (res.isConfirmed) {
+                  signOut(); 
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
+          return;
       }
-        return    res.json();
-      }
-        
-    
-    ).then(x=>{
-      if (x) {
-   
-          SetSkills(x)
       
+      return response.json()
+  })
+     .then(result => {
+      
+      if (result) {
+          if (result.isSuccess) {
+            SetSkills(result)
+          }
+          if (!result.isSuccess) {
+
+           let errors = "<ul>";
+           if (Array.isArray(result.messages)) {
+           
+               result.messages.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+           } else if (result.message) {
+            
+               errors += `<li>${result.message}</li>`;
+           }
+           else if(result.errors){
+      
+              result.errors.Description.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+           }
+           errors += "</ul>";
+   
+           Swal.fire({
+               title: 'Error!',
+               html: errors, 
+               icon: 'error',
+               confirmButtonText: 'Cool',
+               allowEscapeKey:false,
+               allowOutsideClick:false
+           }).then(res => {
+               if (res.isConfirmed) {
+                   SetLoader(false);
+                   SetSkills(null);
+                   router.refresh();
+               }
+           });
+          }
+
       }
-    });
+
+     })
+     .catch(error => {
+         Swal.fire({
+             title: 'Error!',
+             text: `An unexpected error occurred!${error}`,
+             icon: 'error',
+             confirmButtonText: 'Cool',
+             allowEnterKey:false,
+             allowOutsideClick:false
+         }).then((x)=>{
+          if(x.isConfirmed){
+SetSkills(null)
+              SetLoader(false)
+           
+              router.refresh();
+          }
+         });
+     });
     },[])
      const [loader,SetLoader]=useState<boolean>(false)
       function SkillDelete(id:string){
@@ -124,26 +158,7 @@ const SkillTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) => 
                   }
               });
               return;
-          }else if(!response.ok){
-            Swal.fire({
-              title: 'Error!',
-              text: 'An unexpected error occurred!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false 
-
-          }).then(x=>{
-            if (x.isConfirmed) {
-              
-                SetLoader(false)
-
-           signOut()
-              router.refresh();
-            }
-          });
-         return ;
-        }
+          }
 
     
           return response.json()
@@ -162,29 +177,51 @@ const SkillTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) => 
               }).then((res) => {
                   if (res.isConfirmed) {
                     SetLoader(false)
-                    fetch(`${apiDomen}api/Skill/GetSkillForTable?page=${page}`, {
-                      headers: {
-                      
-                        'Authorization':`Bearer ${sessions.data?.user.token}`,
-                      },
-                      cache:"no-store",
-                      method: "GET",
-                    }).then(res=>res.json()).then(x=>SetSkills(x));
+                    SetSkills(prevSkills => {
+                      if (!prevSkills) return null;
+              
+                      return {
+                          ...prevSkills,
+                          data: {
+                              ...prevSkills.data,
+                              data: prevSkills.data.data.filter(skill => skill.id !== id)
+                          }
+                      };
+                  });
                       router.refresh();
                   }
               })
           }else{
+            let errors = "<ul>";
+            if (Array.isArray(responsData.messages)) {
+            
+                responsData.messages.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
+            } else if (responsData.message) {
+             
+                errors += `<li>${responsData.message}</li>`;
+            }
+            else if(responsData.errors){
+               responsData.errors.Description.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+            }
+            errors += "</ul>";
+    
             Swal.fire({
-              title: 'Error!',         
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then((res) => {
-              if (res.isConfirmed) {
-                SetLoader(false)
-                router.refresh();
-                  router.push("/dashboard/skill/1")// Clear the form
-              }
-          })
+                title: 'Error!',
+                html: errors, 
+                icon: 'error',
+                confirmButtonText: 'Cool',
+                allowEscapeKey:false,
+                allowOutsideClick:false
+            }).then(res => {
+                if (res.isConfirmed) {
+                    SetLoader(false);
+                    router.refresh();
+                }
+            });
           }
           }
       
@@ -235,7 +272,7 @@ const SkillTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) => 
     </button>
     :null
    }                     
-    <Link href={`/dashboard/skill/updateskill/${skill.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
+    <Link href={`/dashboard/skill/update/${skill.id}`} className=" mx-3 bg-transparent hover:bg-yellow-500 text-yellow-700 font-semibold hover:text-white py-2 px-4 border border-yellow-500 hover:border-transparent rounded">
       Edit
     </Link>
                         </StyledTableCell>

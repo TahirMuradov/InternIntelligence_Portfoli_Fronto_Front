@@ -42,19 +42,6 @@ const [project,SetProject]=useState<Result<GetProjectDetail>|null>(null);
                                         }
                 });
                 return ;
-            }else if(!response.ok){
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'An unexpected error occurred!',
-                    icon: 'error',
-                    confirmButtonText: 'Cool'
-                }).then(x=>{
-                  if (x.isConfirmed) {
-                     SetLoader(false)      
-                 signOut()
-                    }
-                });
-                return ;
             }
      
         
@@ -64,35 +51,37 @@ const [project,SetProject]=useState<Result<GetProjectDetail>|null>(null);
             
             if (result.isSuccess) {
           SetProject(result)
-          
-       
-         
             } else {
-              let errors = "<ul>";
-              if (Array.isArray(result.messages)) {
-              
-                  result.messages.forEach((message:string)=> {
-                      errors += `<li>${message}</li>`;
-                  });
-              } else if (result.message) {
-               
-                  errors += `<li>${result.message}</li>`;
-              }
-              errors += "</ul>";
-      
-              Swal.fire({
-                  title: 'Error!',
-                  html: errors, 
-                  icon: 'error',
-                  confirmButtonText: 'Cool',
-                  allowEscapeKey:false,
-                  allowOutsideClick:false
-              }).then(res => {
-                  if (res.isConfirmed) {
-                      SetLoader(false);
-                     router.refresh();
-                  }
-              });
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+                   result.errors.Description.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
             }
         }
       })
@@ -114,16 +103,16 @@ const [project,SetProject]=useState<Result<GetProjectDetail>|null>(null);
        e.preventDefault();
        SetLoader(true)
        const form = new FormData(e.currentTarget);        
-       fetch(`${apiDomen}api/Education/UpdateEducation`, {
+       fetch(`${apiDomen}api/Project/UpdateProject`, {
            method:'PUT',
            headers: {
+            'Content-Type': 'application/json',
                           'Authorization':`Bearer ${sessions.data?.user.token}`
             },
            body:JSON.stringify({
-
             id:project?.data.id,
             name:form.get("name"),
-description:form.get("description"),
+            description:form.get("description"),
            }) ,
        })
        .then(response => {
@@ -143,28 +132,13 @@ description:form.get("description"),
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool',
-                allowOutsideClick:false,
-                allowEscapeKey:false
-            }).then(x=>{
-              if (x.isConfirmed) {
-                 SetLoader(false)  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
         return response.json()
     })
        .then(result => {
+
         if (result) {
-            
+           
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
@@ -179,33 +153,42 @@ description:form.get("description"),
                 router.push("/dashboard/project/1")
                     }
                 });
-            } else {
+            } else if(!result.isSuccess) {
     
-             let errors = "<ul>";
-             if (Array.isArray(result.messages)) {
-             
-                 result.messages.forEach((message:string)=> {
-                     errors += `<li>${message}</li>`;
-                 });
-             } else if (result.message) {
-              
-                 errors += `<li>${result.message}</li>`;
-             }
-             errors += "</ul>";
-     
-             Swal.fire({
-                 title: 'Error!',
-                 html: errors, 
-                 icon: 'error',
-                 confirmButtonText: 'Cool',
-                 allowEscapeKey:false,
-                 allowOutsideClick:false
-             }).then(res => {
-                 if (res.isConfirmed) {
-                     SetLoader(false);
-                     router.refresh();
-                 }
-             });
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+                    
+                    Object.keys(result.errors).forEach((key) => {
+                        result.errors[key].forEach((message: string) => {
+                         
+                            errors += `<li>${message}</li>`;
+                        });
+                    });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
+                    }
+                });
             }
         }
        })
@@ -241,7 +224,7 @@ description:form.get("description"),
             <input
                 placeholder="Education Name"
                 type="text"
-                name="educationName"
+                name="name"
                 defaultValue={project?.data.name || ""}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg 
                           focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 

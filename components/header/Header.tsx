@@ -65,7 +65,7 @@ const session=useSession();
               <FontAwesomeIcon onClick={navBar_Toggle} icon={faBars} className='p-4 text-[23px] text-white cursor-pointer' />
             <div >
               {
-session.status=="authenticated"? 
+session.data?.user? 
 <Link href={"/dashboard/main"}>
 <DashboardIcon className='text-white cursor-pointer'/>
 </Link>

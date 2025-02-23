@@ -20,20 +20,20 @@ const AddMainForm:React.FC<{apiDomen:string|undefined}>=({
        e.preventDefault();
        SetLoader(true)
        const form = new FormData(e.currentTarget);       
-  
+
        fetch(`${apiDomen}api/Main/AddMain`, {
            method:'POST',
            headers: {
+            'Content-Type': 'application/json',
             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
 
            body:JSON.stringify({
-title:form.get("title"),
-description:form.get("description"),
-           }) ,
+Title:form.get("title"),
+Description:form.get("description"),
+           })
        })
        .then(response => {
-       
         if (response.status==401) {
             Swal.fire({
                 title: 'Authorization Error!',
@@ -51,23 +51,20 @@ description:form.get("description"),
             });
             return;
         }
+        
         return response.json()
     })
        .then(result => {
-
-        
         if (result) {
             
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Main created successfully!',
+                    text: 'Main successfully!',
                     icon: 'success',
                     confirmButtonText: 'Cool',
-                    allowEnterKey:true,
                     allowEscapeKey:false,
-                    allowOutsideClick:false,
-                                     
+                    allowOutsideClick:false
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
@@ -75,7 +72,7 @@ description:form.get("description"),
                     }
                 });
             } else {
-    
+  
              let errors = "<ul>";
              if (Array.isArray(result.messages)) {
              
@@ -85,6 +82,13 @@ description:form.get("description"),
              } else if (result.message) {
               
                  errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+                Object.keys(result.errors).forEach((key) => {
+                    result.errors[key].forEach((message: string) => {
+                      errors += `<li>${message}</li>`;
+                    });
+                });
              }
              errors += "</ul>";
      
@@ -98,10 +102,13 @@ description:form.get("description"),
              }).then(res => {
                  if (res.isConfirmed) {
                      SetLoader(false);
-                    }
+                     router.refresh();
+                 }
              });
             }
+
         }
+
        })
        .catch(error => {
            Swal.fire({
@@ -109,11 +116,11 @@ description:form.get("description"),
                text: `An unexpected error occurred!${error}`,
                icon: 'error',
                confirmButtonText: 'Cool',
-               allowEscapeKey:false,
+               allowEnterKey:false,
                allowOutsideClick:false
-           }).then(x=>{
-            if (x.isConfirmed) {
-                
+           }).then((x)=>{
+            if(x.isConfirmed){
+
                 SetLoader(false)
              
                 router.refresh();

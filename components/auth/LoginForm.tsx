@@ -20,11 +20,12 @@ async function  login(){
             email,
             password,
             redirect: false,
+        
         }) .then(async (response) => {
           SetLoader(false);
 if(response?.ok){
   
-  await router.push("/");
+  await router.push("/dashboard/main");
 
 }else{
   

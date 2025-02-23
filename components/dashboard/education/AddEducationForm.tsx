@@ -24,6 +24,7 @@ const AddEducationForm:React.FC<{apiDomen:string|undefined}>=({
        fetch(`${apiDomen}api/Education/AddEducation`, {
            method:'POST',
            headers: {
+            'Content-Type': 'application/json',
             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
 
@@ -73,35 +74,45 @@ endDate:form.get("endDate"),
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
-                router.push("/dashboard/main")
+                router.push("/dashboard/education/1")
                     }
                 });
             } else {
     
-             let errors = "<ul>";
-             if (Array.isArray(result.messages)) {
-             
-                 result.messages.forEach((message:string)=> {
-                     errors += `<li>${message}</li>`;
-                 });
-             } else if (result.message) {
-              
-                 errors += `<li>${result.message}</li>`;
-             }
-             errors += "</ul>";
-     
-             Swal.fire({
-                 title: 'Error!',
-                 html: errors, 
-                 icon: 'error',
-                 confirmButtonText: 'Cool',
-                 allowEscapeKey:false,
-                 allowOutsideClick:false
-             }).then(res => {
-                 if (res.isConfirmed) {
-                     SetLoader(false);
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+                    Object.keys(result.errors).forEach((key) => {
+                        result.errors[key].forEach((message: string) => {
+                                                    errors += `<li>${message}</li>`;
+                        });
+                    });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
                     }
-             });
+                });
+     
+         
             }
         }
        })

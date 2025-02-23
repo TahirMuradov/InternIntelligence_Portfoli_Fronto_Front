@@ -45,56 +45,90 @@ const ContactmeTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined})
         },
         cache:"no-store",
         method: "GET",
-      }).then(res=>{
-
-        if(res.status==401){ 
-
+      })
+         .then(response => {
+        if (response.status==401) {
           Swal.fire({
-            title: 'Authorization Error!',
-            text: 'Your session has expired. Please log in again.',
-            icon: 'info',
-            confirmButtonText: 'Login',
-             allowEscapeKey:false,
-             allowOutsideClick:false                     
-        }).then(res => {
-            if (res.isConfirmed) {
-                signOut(); 
-                SetLoader(false);
-                router.refresh();
-            }
-        });
-        return;
-        }
-      else if(!res.ok){
-        Swal.fire({
-          title: 'Error!',
-          text: 'An unexpected error occurred!',
-          icon: 'error',
-          confirmButtonText: 'Cool',
-          allowEscapeKey:false,
-          allowOutsideClick:false
-        }
-     
-    ).then(x=>{
-        if (x.isConfirmed) {
-                      SetLoader(false)
-       signOut()
-    
-        }
-      });
-      return;
+              title: 'Authorization Error!',
+              text: 'Your session has expired. Please log in again.',
+              icon: 'info',
+              confirmButtonText: 'Login',
+               allowEscapeKey:false,
+               allowOutsideClick:false                     
+          }).then(res => {
+              if (res.isConfirmed) {
+                  signOut(); 
+                  SetLoader(false);
+                  router.refresh();
+              }
+          });
+          return;
       }
-        return    res.json();
-      }
-        
-    
-    ).then(x=>{
-      if (x) {
-   
-          Setcontactme(x)
       
+      return response.json()
+  })
+     .then(result => {
+      
+      if (result) {
+          if (result.isSuccess) {
+            Setcontactme(result)
+          }
+          if (!result.isSuccess) {
+
+           let errors = "<ul>";
+           if (Array.isArray(result.messages)) {
+           
+               result.messages.forEach((message:string)=> {
+                   errors += `<li>${message}</li>`;
+               });
+           } else if (result.message) {
+            
+               errors += `<li>${result.message}</li>`;
+           }
+           else if(result.errors){
+      
+              result.errors.Description.forEach((message:string)=> {
+                  errors += `<li>${message}</li>`;
+              });
+           }
+           errors += "</ul>";
+   
+           Swal.fire({
+               title: 'Error!',
+               html: errors, 
+               icon: 'error',
+               confirmButtonText: 'Cool',
+               allowEscapeKey:false,
+               allowOutsideClick:false
+           }).then(res => {
+               if (res.isConfirmed) {
+                   SetLoader(false);
+                   Setcontactme(null);
+                   router.refresh();
+               }
+           });
+          }
+
       }
-    });
+
+     })
+     .catch(error => {
+         Swal.fire({
+             title: 'Error!',
+             text: `An unexpected error occurred!${error}`,
+             icon: 'error',
+             confirmButtonText: 'Cool',
+             allowEnterKey:false,
+             allowOutsideClick:false
+         }).then((x)=>{
+          if(x.isConfirmed){
+Setcontactme(null)
+              SetLoader(false)
+           
+              router.refresh();
+          }
+         });
+     });
     },[])
      const [loader,SetLoader]=useState<boolean>(false)
       function ContactMeDelete(id:string){
@@ -104,7 +138,8 @@ const ContactmeTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined})
           'Authorization':`Bearer ${sessions.data?.user.token}`
           },
          method: "DELETE",
-        }).then(response=>{
+        })
+        .then(response=>{
           
      
             if (response.status==401) {
@@ -123,26 +158,7 @@ const ContactmeTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined})
                   }
               });
               return;
-          }else if(!response.ok){
-            Swal.fire({
-              title: 'Error!',
-              text: 'An unexpected error occurred!',
-              icon: 'error',
-              confirmButtonText: 'Cool',
-              allowEscapeKey:false,
-              allowOutsideClick:false 
-
-          }).then(x=>{
-            if (x.isConfirmed) {
-              
-                SetLoader(false)
-
-           signOut()
-              router.refresh();
-            }
-          });
-         return ;
-        }
+          }
 
     
           return response.json()
@@ -161,29 +177,54 @@ const ContactmeTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined})
               }).then((res) => {
                   if (res.isConfirmed) {
                     SetLoader(false)
-                    fetch(`${apiDomen}api/ContactMe/GetContactMeForTable?page=${page}`, {
-                      headers: {
-                      
-                        'Authorization':`Bearer ${sessions.data?.user.token}`,
-                      },
-                      cache:"no-store",
-                      method: "GET",
-                    }).then(res=>res.json()).then(x=>Setcontactme(x));
+                    Setcontactme(prevContact => {
+                      if (!prevContact) return null;
+              
+                      return {
+                          ...prevContact,
+                          data: {
+                              ...prevContact.data,
+                              data: prevContact.data.data.filter(contact => contact.id !== id)
+                          }
+                      };
+                  });
                       router.refresh();
                   }
               })
-          }else{
-            Swal.fire({
-              title: 'Error!',         
-              icon: 'error',
-              confirmButtonText: 'Cool'
-          }).then((res) => {
-              if (res.isConfirmed) {
-                SetLoader(false)
-                router.refresh();
-                  router.push("/dashboard/contactme/1")
-              }
-          })
+          }
+          else  {
+             let errors = "<ul>";
+                         if (Array.isArray(responsData.messages)) {
+                         
+                             responsData.messages.forEach((message:string)=> {
+                                 errors += `<li>${message}</li>`;
+                             });
+                         } else if (responsData.message) {
+                          
+                             errors += `<li>${responsData.message}</li>`;
+                         }
+                         else if(responsData.errors){
+                          Object.keys(responsData.errors).forEach((key) => {
+                            responsData.errors[key].forEach((message: string) => {
+                                                        errors += `<li>${message}</li>`;
+                            });
+                        });
+                         }
+                         errors += "</ul>";
+                 
+                         Swal.fire({
+                             title: 'Error!',
+                             html: errors, 
+                             icon: 'error',
+                             confirmButtonText: 'Cool',
+                             allowEscapeKey:false,
+                             allowOutsideClick:false
+                         }).then(res => {
+                             if (res.isConfirmed) {
+                                 SetLoader(false);
+                                 router.refresh();
+                             }
+                         });
           }
           }
       
@@ -217,26 +258,10 @@ const ContactmeTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined})
                    }
                });
                return;
-           }else if(!response.ok){
-             Swal.fire({
-               title: 'Error!',
-               text: 'An unexpected error occurred!',
-               icon: 'error',
-               confirmButtonText: 'Cool',
-               allowEscapeKey:false,
-               allowOutsideClick:false 
- 
-           }).then(x=>{
-             if (x.isConfirmed) {
-               
-                 SetLoader(false)
- 
-            signOut()
-               router.refresh();
-             }
-           });
-          return ;
-         }
+           }
+             
+          
+         
  
      
            return response.json()
@@ -254,7 +279,7 @@ const ContactmeTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined})
                    allowOutsideClick:false 
                }).then((res) => {
                    if (res.isConfirmed) {
-                     SetLoader(false)
+                 
                      fetch(`${apiDomen}api/ContactMe/GetContactMeForTable?page=${page}`, {
                        headers: {
                        
@@ -264,20 +289,42 @@ const ContactmeTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined})
                        method: "GET",
                      }).then(res=>res.json()).then(x=>Setcontactme(x));
                        router.refresh();
+                       SetLoader(false)
                    }
                })
            }else{
-             Swal.fire({
-               title: 'Error!',         
-               icon: 'error',
-               confirmButtonText: 'Cool'
-           }).then((res) => {
-               if (res.isConfirmed) {
-                 SetLoader(false)
-                 router.refresh();
-                   router.push("/dashboard/contactme/1")
-               }
-           })
+          let errors = "<ul>";
+                      if (Array.isArray(responsData.messages)) {
+                      
+                          responsData.messages.forEach((message:string)=> {
+                              errors += `<li>${message}</li>`;
+                          });
+                      } else if (responsData.message) {
+                       
+                          errors += `<li>${responsData.message}</li>`;
+                      }
+                      else if(responsData.errors){
+                        Object.keys(responsData.errors).forEach((key) => {
+                          responsData.errors[key].forEach((message: string) => {
+                                                      errors += `<li>${message}</li>`;
+                          });
+                      });
+                      }
+                      errors += "</ul>";
+              
+                      Swal.fire({
+                          title: 'Error!',
+                          html: errors, 
+                          icon: 'error',
+                          confirmButtonText: 'Cool',
+                          allowEscapeKey:false,
+                          allowOutsideClick:false
+                      }).then(res => {
+                          if (res.isConfirmed) {
+                              SetLoader(false);
+                              router.refresh();
+                          }
+                      });
            }
            }
        

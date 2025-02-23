@@ -21,9 +21,10 @@ const AddProjectForm:React.FC<{apiDomen:string|undefined}>=({
        SetLoader(true)
        const form = new FormData(e.currentTarget);       
   
-       fetch(`${apiDomen}/api/Project/AddProject`, {
+       fetch(`${apiDomen}api/Project/AddProject`, {
            method:'POST',
            headers: {
+            'Content-Type': 'application/json',
             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
 
@@ -33,7 +34,6 @@ description:form.get("description"),
            }) ,
        })
        .then(response => {
-       
         if (response.status==401) {
             Swal.fire({
                 title: 'Authorization Error!',
@@ -51,31 +51,29 @@ description:form.get("description"),
             });
             return;
         }
+      
         return response.json()
     })
        .then(result => {
-
-        
+    
         if (result) {
             
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Project created successfully!',
+                    text: 'Project added successfully!',
                     icon: 'success',
                     confirmButtonText: 'Cool',
-                    allowEnterKey:true,
                     allowEscapeKey:false,
-                    allowOutsideClick:false,
-                                     
+                    allowOutsideClick:false
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
                 router.push("/dashboard/project/1")
                     }
                 });
-            } else {
-    
+            } else if(!result.isSuccess) {
+  
              let errors = "<ul>";
              if (Array.isArray(result.messages)) {
              
@@ -85,6 +83,11 @@ description:form.get("description"),
              } else if (result.message) {
               
                  errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+                result.errors.Description.forEach((message:string)=> {
+                    errors += `<li>${message}</li>`;
+                });
              }
              errors += "</ul>";
      
@@ -98,10 +101,13 @@ description:form.get("description"),
              }).then(res => {
                  if (res.isConfirmed) {
                      SetLoader(false);
-                    }
+                     router.refresh();
+                 }
              });
             }
+
         }
+
        })
        .catch(error => {
            Swal.fire({
@@ -109,11 +115,11 @@ description:form.get("description"),
                text: `An unexpected error occurred!${error}`,
                icon: 'error',
                confirmButtonText: 'Cool',
-               allowEscapeKey:false,
+               allowEnterKey:false,
                allowOutsideClick:false
-           }).then(x=>{
-            if (x.isConfirmed) {
-                
+           }).then((x)=>{
+            if(x.isConfirmed){
+
                 SetLoader(false)
              
                 router.refresh();

@@ -119,15 +119,16 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
     form.append("id",`${main?.data.id}`)
 
    
-       fetch(`${apiDomen}api/Aboutme/UpdateAboutMe`, {
+       fetch(`${apiDomen}api/Main/UpdateMain`, {
            method:'PUT',
            headers: {
+            'Content-Type': 'application/json',
              'Authorization':`Bearer ${sessions.data?.user.token}`
             },
            body:JSON.stringify({
             id:main?.data.id,
             title:form.get("title"),
-            description:form.get("description")
+            description:form.get("Description")
            }) ,
        })
        .then(response => {
@@ -147,21 +148,8 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                 }
             });
             return;
-        }else if(!response.ok){
-            Swal.fire({
-                title: 'Error!',
-                text: 'An unexpected error occurred!',
-                icon: 'error',
-                confirmButtonText: 'Cool'
-            }).then(x=>{
-              if (x.isConfirmed) {
-                 SetLoader(false)  
-             signOut()
-                router.refresh();
-              }
-            });
-            return;
         }
+        
         return response.json()
     })
        .then(result => {
@@ -170,9 +158,11 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'Main successfully!',
+                    text: 'Main update successfully!',
                     icon: 'success',
-                    confirmButtonText: 'Cool'
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
@@ -180,7 +170,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                     }
                 });
             } else {
-    
+  
              let errors = "<ul>";
              if (Array.isArray(result.messages)) {
              
@@ -190,6 +180,13 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
              } else if (result.message) {
               
                  errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+                Object.keys(result.errors).forEach((key) => {
+                    result.errors[key].forEach((message: string) => {
+                                                errors += `<li>${message}</li>`;
+                    });
+                });
              }
              errors += "</ul>";
      
@@ -207,15 +204,18 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                  }
              });
             }
+
         }
+
        })
        .catch(error => {
            Swal.fire({
                title: 'Error!',
                text: `An unexpected error occurred!${error}`,
-               
                icon: 'error',
-               confirmButtonText: 'Cool'
+               confirmButtonText: 'Cool',
+               allowEnterKey:false,
+               allowOutsideClick:false
            }).then((x)=>{
             if(x.isConfirmed){
 
@@ -232,13 +232,13 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
    }
    return(<form id="addPaymentgMethod" onSubmit={HandleSubmit}>
     <div className="grid grid-cols-4 gap-6 mb-6">
-        {/* Full Name */}
+        {/* Title */}
         <div className="col-span-4 border-2 border-gray-200 border-dashed rounded-lg p-4">
             <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                Full Name:
+                Title:
             </label>
             <input
-                placeholder="Full Name"
+                placeholder="Title"
                 type="text"
                 name="title"
                 defaultValue={main?.data.title || ""}
@@ -256,7 +256,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
                 Description:
             </label>
             <input
-                placeholder="AboutMe Description"
+                placeholder="Description"
                 type="text"
                 name="Description"
                 defaultValue={main?.data.description || ""}

@@ -24,6 +24,7 @@ const AddSkillForm:React.FC<{apiDomen:string|undefined}>=({
        fetch(`${apiDomen}api/Skill/AddSkill`, {
            method:'POST',
            headers: {
+            'Content-Type': 'application/json',
             'Authorization':`Bearer ${sessions.data?.user.token}`
             },
 
@@ -76,30 +77,36 @@ const AddSkillForm:React.FC<{apiDomen:string|undefined}>=({
                 });
             } else {
     
-             let errors = "<ul>";
-             if (Array.isArray(result.messages)) {
-             
-                 result.messages.forEach((message:string)=> {
-                     errors += `<li>${message}</li>`;
-                 });
-             } else if (result.message) {
-              
-                 errors += `<li>${result.message}</li>`;
-             }
-             errors += "</ul>";
-     
-             Swal.fire({
-                 title: 'Error!',
-                 html: errors, 
-                 icon: 'error',
-                 confirmButtonText: 'Cool',
-                 allowEscapeKey:false,
-                 allowOutsideClick:false
-             }).then(res => {
-                 if (res.isConfirmed) {
-                     SetLoader(false);
+                let errors = "<ul>";
+                if (Array.isArray(result.messages)) {
+                
+                    result.messages.forEach((message:string)=> {
+                        errors += `<li>${message}</li>`;
+                    });
+                } else if (result.message) {
+                 
+                    errors += `<li>${result.message}</li>`;
+                }
+                else if(result.errors){
+                   result.errors.Description.forEach((message:string)=> {
+                       errors += `<li>${message}</li>`;
+                   });
+                }
+                errors += "</ul>";
+        
+                Swal.fire({
+                    title: 'Error!',
+                    html: errors, 
+                    icon: 'error',
+                    confirmButtonText: 'Cool',
+                    allowEscapeKey:false,
+                    allowOutsideClick:false
+                }).then(res => {
+                    if (res.isConfirmed) {
+                        SetLoader(false);
+                        router.refresh();
                     }
-             });
+                });
             }
         }
        })

@@ -7,8 +7,7 @@ import Loader from "@/components/common/loader/Loader";
 
 
 const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
-    apiDomen,
-    
+    apiDomen,    
 })=>{
 
     const[loader,SetLoader]=useState<boolean>(false)
@@ -30,7 +29,6 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
            body:form ,
        })
        .then(response => {
-       
         if (response.status==401) {
             Swal.fire({
                 title: 'Authorization Error!',
@@ -48,23 +46,20 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
             });
             return;
         }
+        
         return response.json()
     })
        .then(result => {
-
-        
         if (result) {
             
             if (result.isSuccess) {
                 Swal.fire({
                     title: 'Success!',
-                    text: 'About me created successfully!',
+                    text: 'Aboutme creat successfully!',
                     icon: 'success',
                     confirmButtonText: 'Cool',
-                    allowEnterKey:true,
                     allowEscapeKey:false,
-                    allowOutsideClick:false,
-                                     
+                    allowOutsideClick:false
                 }).then((res) => {
                     if (res.isConfirmed) {
                       SetLoader(false)                
@@ -72,7 +67,7 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
                     }
                 });
             } else {
-    
+  
              let errors = "<ul>";
              if (Array.isArray(result.messages)) {
              
@@ -82,6 +77,13 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
              } else if (result.message) {
               
                  errors += `<li>${result.message}</li>`;
+             }
+             else if(result.errors){
+                Object.keys(result.errors).forEach((key) => {
+                    result.errors[key].forEach((message: string) => {
+                                                errors += `<li>${message}</li>`;
+                    });
+                });
              }
              errors += "</ul>";
      
@@ -95,10 +97,13 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
              }).then(res => {
                  if (res.isConfirmed) {
                      SetLoader(false);
-                    }
+                     router.refresh();
+                 }
              });
             }
+
         }
+
        })
        .catch(error => {
            Swal.fire({
@@ -106,12 +111,13 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
                text: `An unexpected error occurred!${error}`,
                icon: 'error',
                confirmButtonText: 'Cool',
-               allowOutsideClick:false,
-               allowEscapeKey:false
-           }).then(x=>{
+               allowEnterKey:false,
+               allowOutsideClick:false
+           }).then((x)=>{
             if(x.isConfirmed){
 
                 SetLoader(false)
+             
                 router.refresh();
             }
            });
@@ -291,6 +297,4 @@ const CreateAboutMeForm:React.FC<{apiDomen:string|undefined}>=({
 </form>
 )
 }
-
-
 export default CreateAboutMeForm
