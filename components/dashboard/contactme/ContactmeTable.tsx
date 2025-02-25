@@ -9,7 +9,7 @@ import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableCont
 import { signOut, useSession } from "next-auth/react";
 import PaginatedList from "@/types/PaginatedList";
 import GetContactMeDetail from "@/types/ContactMeTypes/GetContactMeDetail";
-import DoneAllIcon from '@mui/icons-material/DoneAll';
+
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -238,7 +238,7 @@ Setcontactme(null)
            headers: {
            'Authorization':`Bearer ${sessions.data?.user.token}`
            },
-          method: "DELETE",
+          method: "PUT",
          }).then(response=>{
            
       
@@ -333,7 +333,9 @@ Setcontactme(null)
       if (loader) {
         return <Loader/>
       }
-     
+     if (contactme) {
+     console.log(contactme)
+     }
       return (
         <TableContainer component={Paper} >
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -365,8 +367,10 @@ Setcontactme(null)
                   <StyledTableCell align="center">{contact?.name}</StyledTableCell>
                   <StyledTableCell align="center">{contact.email}</StyledTableCell>
                   <StyledTableCell align="center">{contact.message}</StyledTableCell>
-                  <StyledTableCell align="center">{Date.parse(` ${ contact.CreatedDate.toLocaleTimeString()}`)}</StyledTableCell>
-                  <StyledTableCell align="center">{`${contact.isRead?"new":<DoneAllIcon/>}`}</StyledTableCell>
+                  <StyledTableCell align="center">{`${!contact.isRead?"new":"seen"}`}</StyledTableCell>
+                  <StyledTableCell align="center">
+                  {new Date(contact.CreatedDate).toLocaleDateString()}
+</StyledTableCell>
                      
                 
                
