@@ -1,5 +1,4 @@
 
-
 import "../globals.css"
 import Header from "@/components/header/Header";
 import Provider from "../Provider";
@@ -9,9 +8,6 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode
 }) {
-
-  
-
   return (
     <div className={``}>
 <Provider>

@@ -287,7 +287,7 @@ SetAboutMes(null)
                     {aboutMes?.data.id}
                   </StyledTableCell>
                   <StyledTableCell align="center">{aboutMes?.data.fullName}</StyledTableCell>
-                  <StyledTableCell align="center">{`${aboutMes?.data.birthDay}`}</StyledTableCell>
+                  <StyledTableCell align="center">{new Date(aboutMes?.data.birthDay).toLocaleDateString()}</StyledTableCell>
                   <StyledTableCell align="center">{`${aboutMes?.data.nationality}`}</StyledTableCell>
                   <StyledTableCell align="center">{`${aboutMes?.data.adress}`}</StyledTableCell>
                   <StyledTableCell align="center">{`${aboutMes?.data.phoneNumber}`}</StyledTableCell>
