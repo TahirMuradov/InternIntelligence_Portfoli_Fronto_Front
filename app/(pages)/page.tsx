@@ -9,7 +9,7 @@ import GetAllDataForHome from "@/types/HomeTypes/GetAllDataForHome";
 
 async function  dataFecthAsync(apiDomen:string|undefined):Promise< Result<GetAllDataForHome>|null>{
   try {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
     const response:Response=await  fetch(`${apiDomen}api/Home/GetAllDataForHome`, {
       cache:"no-store",

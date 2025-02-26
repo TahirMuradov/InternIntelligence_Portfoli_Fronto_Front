@@ -18,6 +18,7 @@ const [education,SetEducation]=useState<Result<GetEducationDetail>|null>(null);
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
+        SetLoader(true)
         fetch(`${apiDomen}api/Education/GetEducationById?id=${id}`, {
           method: 'GET',
           headers: {
@@ -64,6 +65,7 @@ const [education,SetEducation]=useState<Result<GetEducationDetail>|null>(null);
             
             if (result.isSuccess) {
           SetEducation(result)
+          SetLoader(false)
           
        
          

@@ -18,6 +18,7 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
+        SetLoader(true)
         fetch(`${apiDomen}api/Aboutme/GetAboutMeForTable`, {
           method: 'GET',
           headers: {
@@ -51,6 +52,7 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
            
             if(result.isSuccess){
                 SetAboutMe(result)
+                SetLoader(false)
             }
             if (!result.isSuccess) {
   

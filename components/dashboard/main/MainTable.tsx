@@ -12,6 +12,7 @@ import GetMainDetail from "@/types/MainTypes/GetMainDetail";
 
 
 
+
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
@@ -34,6 +35,8 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
     const[main,Setmain]=useState<Result<GetMainDetail>|null>(null);
+    const [loader,SetLoader]=useState<boolean>(false)
+  
     const router=useRouter();
     const sessions=useSession();
   function  GetData(){
@@ -70,6 +73,7 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
           if(result.isSuccess){
             
             Setmain(result)
+            SetLoader(false)
           }
           if (!result.isSuccess) {
 
@@ -127,11 +131,10 @@ const MainTable = ({apiDomen}:{apiDomen:string|undefined}) => {
      });
   }
     useEffect(()=>{
-    
+    SetLoader(true)
    GetData()
    
     },[])
-     const [loader,SetLoader]=useState<boolean>(false)
       function MainDelete(id:string){
         SetLoader(true)
        fetch(`${apiDomen}api/Main/DeleteMain?MainId=${id}`, {

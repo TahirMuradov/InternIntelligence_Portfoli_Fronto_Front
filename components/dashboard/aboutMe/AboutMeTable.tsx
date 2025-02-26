@@ -35,11 +35,13 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
     const[aboutMes,SetAboutMes]=useState<Result<GetAboutMeDetailDTO>|null>(null);
+    const [loader,SetLoader]=useState<boolean>(false)
+
     const router=useRouter();
     const sessions=useSession();
   
     useEffect(()=>{
-    
+    SetLoader(true)
       fetch(`${apiDomen}api/Aboutme/GetAboutMeForTable`, {
         headers: {
            'Authorization':`Bearer ${sessions.data?.user.token}`,
@@ -73,6 +75,7 @@ const AboutMeTable = ({apiDomen}:{apiDomen:string|undefined}) => {
         if (result) {
             if (result.isSuccess) {
               SetAboutMes(result)
+              SetLoader(false)
             }
             if (!result.isSuccess) {
   
@@ -133,7 +136,9 @@ SetAboutMes(null)
            });
        });
     },[])
-     const [loader,SetLoader]=useState<boolean>(false)
+    if (aboutMes) {
+      console.log(aboutMes)
+    }
       function AboutMeDelete(id:string){
         SetLoader(true)
        fetch(`${apiDomen}api/Aboutme/DeleteAboutMe?AboutMeId=${id}`, {

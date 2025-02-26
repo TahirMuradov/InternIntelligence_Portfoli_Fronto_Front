@@ -18,6 +18,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
+        SetLoader(true)
         fetch(`${apiDomen}api/Main/GetMainForTable`, {
           method: 'GET',
           headers: {
@@ -65,7 +66,7 @@ const [main,Setmain]=useState<Result<GetMainDetail>|null>(null);
             
             if (result.isSuccess) {
           Setmain(result)
-          
+          SetLoader(false)
        
          
             } else {

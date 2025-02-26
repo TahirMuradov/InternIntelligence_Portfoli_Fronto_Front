@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import Loader from "../../common/loader/Loader";
-import { Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
+import { Pagination, Paper, styled, Table, TableBody, TableCell, tableCellClasses, TableContainer, TableHead, TableRow } from "@mui/material";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import PaginatedList from "@/types/PaginatedList";
@@ -35,103 +35,108 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 
 const SkillTable = ({apiDomen,page}:{page:number,apiDomen:string|undefined}) => {
     const[skills,SetSkills]=useState<Result<PaginatedList<GetSkillDetail>>|null>(null);
+    const [pageState,SetPageState]=useState<number>(page);
+    const [loader,SetLoader]=useState<boolean>(false)
+
     const router=useRouter();
     const sessions=useSession();
-  
-    useEffect(()=>{
+  function dataFetch(page:number){
+    fetch(`${apiDomen}api/Skill/GetSkillForTable?page=${page}`, {
+      headers: {
+         'Authorization':`Bearer ${sessions.data?.user.token}`,
+      },
+      cache:"no-store",
+      method: "GET",
+    })
+       .then(response => {
+      if (response.status==401) {
+        Swal.fire({
+            title: 'Authorization Error!',
+            text: 'Your session has expired. Please log in again.',
+            icon: 'info',
+            confirmButtonText: 'Login',
+             allowEscapeKey:false,
+             allowOutsideClick:false                     
+        }).then(res => {
+            if (res.isConfirmed) {
+                signOut(); 
+                SetLoader(false);
+                router.refresh();
+            }
+        });
+        return;
+    }
     
-      fetch(`${apiDomen}api/Skill/GetSkillForTable?page=${page}`, {
-        headers: {
-           'Authorization':`Bearer ${sessions.data?.user.token}`,
-        },
-        cache:"no-store",
-        method: "GET",
-      })
-         .then(response => {
-        if (response.status==401) {
-          Swal.fire({
-              title: 'Authorization Error!',
-              text: 'Your session has expired. Please log in again.',
-              icon: 'info',
-              confirmButtonText: 'Login',
-               allowEscapeKey:false,
-               allowOutsideClick:false                     
-          }).then(res => {
-              if (res.isConfirmed) {
-                  signOut(); 
-                  SetLoader(false);
-                  router.refresh();
-              }
-          });
-          return;
-      }
-      
-      return response.json()
-  })
-     .then(result => {
-      
-      if (result) {
-          if (result.isSuccess) {
-            SetSkills(result)
-          }
-          if (!result.isSuccess) {
+    return response.json()
+})
+   .then(result => {
+    
+    if (result) {
+        if (result.isSuccess) {
+          SetSkills(result)
+          SetLoader(false)
+        }
+        if (!result.isSuccess) {
 
-           let errors = "<ul>";
-           if (Array.isArray(result.messages)) {
-           
-               result.messages.forEach((message:string)=> {
-                   errors += `<li>${message}</li>`;
-               });
-           } else if (result.message) {
-            
-               errors += `<li>${result.message}</li>`;
-           }
-           else if(result.errors){
-      
-              result.errors.Description.forEach((message:string)=> {
-                  errors += `<li>${message}</li>`;
-              });
-           }
-           errors += "</ul>";
-   
-           Swal.fire({
-               title: 'Error!',
-               html: errors, 
-               icon: 'error',
-               confirmButtonText: 'Cool',
-               allowEscapeKey:false,
-               allowOutsideClick:false
-           }).then(res => {
-               if (res.isConfirmed) {
-                   SetLoader(false);
-                   SetSkills(null);
-                   router.refresh();
-               }
-           });
-          }
-
-      }
-
-     })
-     .catch(error => {
+         let errors = "<ul>";
+         if (Array.isArray(result.messages)) {
+         
+             result.messages.forEach((message:string)=> {
+                 errors += `<li>${message}</li>`;
+             });
+         } else if (result.message) {
+          
+             errors += `<li>${result.message}</li>`;
+         }
+         else if(result.errors){
+    
+            result.errors.Description.forEach((message:string)=> {
+                errors += `<li>${message}</li>`;
+            });
+         }
+         errors += "</ul>";
+ 
          Swal.fire({
              title: 'Error!',
-             text: `An unexpected error occurred!${error}`,
+             html: errors, 
              icon: 'error',
              confirmButtonText: 'Cool',
-             allowEnterKey:false,
+             allowEscapeKey:false,
              allowOutsideClick:false
-         }).then((x)=>{
-          if(x.isConfirmed){
-SetSkills(null)
-              SetLoader(false)
-           
-              router.refresh();
-          }
+         }).then(res => {
+             if (res.isConfirmed) {
+                 SetLoader(false);
+                 SetSkills(null);
+                 router.refresh();
+             }
          });
-     });
-    },[])
-     const [loader,SetLoader]=useState<boolean>(false)
+        }
+
+    }
+
+   })
+   .catch(error => {
+       Swal.fire({
+           title: 'Error!',
+           text: `An unexpected error occurred!${error}`,
+           icon: 'error',
+           confirmButtonText: 'Cool',
+           allowEnterKey:false,
+           allowOutsideClick:false
+       }).then((x)=>{
+        if(x.isConfirmed){
+SetSkills(null)
+            SetLoader(false)
+         
+            router.refresh();
+        }
+       });
+   });
+  }
+    useEffect(()=>{
+    SetLoader(true)
+    dataFetch(pageState);
+    },[pageState])
       function SkillDelete(id:string){
         SetLoader(true)
        fetch(`${apiDomen}api/Skill/DeleteSkill?id=${id}`, {
@@ -229,6 +234,13 @@ SetSkills(null)
         
         ;
       }
+
+
+      const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+        SetPageState(value); 
+        
+    }
+
       if (loader) {
         return <Loader/>
       }
@@ -282,6 +294,9 @@ SetSkills(null)
          
             </TableBody>
           </Table>
+           <div className="flex justify-center">
+                                  <Pagination color="standard" count={skills?.data.totalPages} shape="rounded" onChange={handlePageChange}  />
+                                  </div>
         </TableContainer>
   )
 }

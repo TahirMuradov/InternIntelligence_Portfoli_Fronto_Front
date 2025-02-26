@@ -18,6 +18,7 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
+        SetLoader(true)
         fetch(`${apiDomen}api/Skill/GetSkillById?id=${id}`, {
           method: 'GET',
           headers: {
@@ -51,7 +52,7 @@ const [skill,SetSkill]=useState<Result<GetSkillDetail>|null>(null);
             
             if (result.isSuccess) {
           SetSkill(result)
-          
+          SetLoader(false)
        
          
             } else {

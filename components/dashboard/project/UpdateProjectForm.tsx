@@ -18,6 +18,7 @@ const [project,SetProject]=useState<Result<GetProjectDetail>|null>(null);
     const router=useRouter();
     const sessions=useSession();
     useEffect(()=>{
+        SetLoader(true)
         fetch(`${apiDomen}api/Project/GetProjectById?id=${id}`, {
           method: 'GET',
           headers: {
@@ -51,6 +52,7 @@ const [project,SetProject]=useState<Result<GetProjectDetail>|null>(null);
             
             if (result.isSuccess) {
           SetProject(result)
+          SetLoader(false)
             } else {
                 let errors = "<ul>";
                 if (Array.isArray(result.messages)) {
