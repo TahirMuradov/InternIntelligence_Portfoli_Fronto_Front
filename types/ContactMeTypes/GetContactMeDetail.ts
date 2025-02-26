@@ -4,5 +4,5 @@ export default interface GetContactMeDetail{
     email:string,
     message:string,
     isRead:boolean,
-    CreatedDate:Date
+    createdDate:Date
 }

@@ -75,7 +75,9 @@ function dataFetch(page:number){
   if (result) {
       if (result.isSuccess) {
         Setcontactme(result)
+        
         SetLoader(false)
+    
       }
       if (!result.isSuccess) {
 
@@ -139,7 +141,7 @@ Setcontactme(null)
 
       SetLoader(true)
     dataFetch(pageState)
-   
+
     },[pageState])
       function ContactMeDelete(id:string){
         SetLoader(true)
@@ -347,7 +349,7 @@ Setcontactme(null)
       if (loader) {
         return <Loader/>
       }
-  
+
       return (<>
         <TableContainer component={Paper}  >
           <Table sx={{ minWidth: 700 }} aria-label="customized table">
@@ -381,7 +383,8 @@ Setcontactme(null)
                   <StyledTableCell align="center">{contact.message}</StyledTableCell>
                   <StyledTableCell align="center">{`${!contact.isRead?"new":"seen"}`}</StyledTableCell>
                   <StyledTableCell align="center">
-                  {new Date(contact.CreatedDate).toLocaleDateString()}
+                  {new Date(contact.createdDate).toLocaleString()}
+
                   </StyledTableCell>
                      
                 

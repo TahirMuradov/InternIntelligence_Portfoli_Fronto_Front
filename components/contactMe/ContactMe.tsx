@@ -45,6 +45,7 @@ import { useRouter } from "next/navigation";
         if (result) {
             
             if (result.isSuccess) {
+             
                 Swal.fire({
                     title: 'Success!',
                     text: 'Message was sent successfully!',
