@@ -123,7 +123,7 @@ const [aboutMe,SetAboutMe]=useState<Result<GetAboutMeDetailDTO>|null>(null);
        fetch(`${apiDomen}api/Aboutme/UpdateAboutMe`, {
            method:'PUT',
            headers: {
-              'Content-Type': 'multipart/form-data',
+            
               'Authorization':`Bearer ${sessions.data?.user.token}`
             },
            body:form ,

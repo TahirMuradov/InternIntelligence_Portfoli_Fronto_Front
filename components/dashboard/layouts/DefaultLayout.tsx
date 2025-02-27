@@ -75,6 +75,9 @@ export default function DefaultLayout({
                 <li>
                   <button onClick={()=>signOut()} className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white" role="menuitem">Sign out</button>
                 </li>
+                <li>
+                  <Link  className="block text-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"  href={"/"}>Home</Link>
+                </li>
               </ul>
             </div>
           </div>

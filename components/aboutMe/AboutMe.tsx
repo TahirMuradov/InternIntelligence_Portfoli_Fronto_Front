@@ -65,7 +65,7 @@ const AboutMe= async ({data}:{data:GetAboutMeForUIDTO|null})  => {
     
     
     <div className="img_box after:hidden lg:after:block">
-    <Image className='static lg:absolute' width={365} height={385} src={image1} alt={`${apiDomen+data.photoUrl}`} />
+    <Image className='static lg:absolute' width={365} height={385} src={apiDomen+data.photoUrl} alt={`${apiDomen+data.photoUrl}`} />
     </div>
     
     <div>
