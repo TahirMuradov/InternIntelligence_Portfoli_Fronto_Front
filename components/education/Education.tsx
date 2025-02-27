@@ -11,7 +11,7 @@ import React from 'react'
     
       <div className="edu w-[80%] mx-auto py-28">
     <div id='title' className="w-full text-center">
-        <h2>Educaton</h2>
+        <h2>Education</h2>
     </div>
     <div className="content w-full h-auto">
     <div className="cd-timeline w-full h-auto">
@@ -83,7 +83,7 @@ if (data) {
     
       <div className="edu w-[80%] mx-auto py-28">
     <div id='title' className="w-full text-center">
-        <h2>Educaton</h2>
+        <h2>Education</h2>
     </div>
     <div className="content w-full h-auto">
     <div className="cd-timeline w-full h-auto">
