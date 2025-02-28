@@ -114,7 +114,7 @@ const Projects=async ({data}:{data:GetProjectForUI[]|null}) => {
                         {
                             data.map((project, index) => (
 
-                        <div className="grid lg:grid-cols-5 grid-rows-2 pb-6" key={index}>
+                        <div className="grid grid-cols-1 lg:grid-cols-5 grid-rows-2 pb-6" key={index}>
                 <div className="title lg:col-span-2 lg:text-end">
                     <h2 className='text-[20px] block'> {project.name} </h2>
                     
