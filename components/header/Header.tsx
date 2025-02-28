@@ -45,7 +45,7 @@ const session=useSession();
   return (
     <React.Fragment>
       <header style={{ transition: "1s" }} className="bg-transparent fixed w-full transition-colors z-[999]">
-        <div className="container mx-auto">
+        <div className="w-[80%] mx-auto">
           <div className="flex justify-between">
             <div className="social-networks col-4">
               <ul className='flex items-center'>

@@ -4,6 +4,38 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
 
 const DefaultContent=()=>{
+  const projects = [
+    {
+      title: "Shoes Ecommerce",
+      description:
+        "NextJs 14, Next-Intl, NextAuth, TypeScript, TailwindCSS, MaterialUI, Redux Toolkit",
+      link: "https://shoes-next-js.vercel.app/",
+    },
+    {
+      title: "Shoes Ecommerce API",
+      description:
+        "API, N-Tier architecture, multilingual validation errors (FluentValidation), JWT Token, Authentication & Authorization",
+    },
+    {
+      title: "Karl Fashion",
+      description:
+        "MVC, N-tier architecture, Add to Cart, Order PDF Generator, IdentityToken, Confirm Email, Forgot Password, Multilanguage, Order PDF via Email",
+    },
+    {
+      title: "Karl-Fashion API",
+      description:
+        "AccessToken, RefreshToken, JWT Token, Hashing, FluentValidation, Multilanguage",
+    },
+    {
+      title: "Aztu-Events",
+      description:
+        "MVC, N-tier architecture, IdentityToken, Confirm Email, Forgot Password, Multilanguage",
+    },
+    {
+      title: "ZMT zmt.az",
+      description: "MVC, N-tier architecture, IdentityToken, Confirm Email, Forgot Password",
+    },
+  ];
     return (
         <>
         <section id="workeducation" className='bg-[#22252C] w-full h-auto'>
@@ -20,118 +52,38 @@ const DefaultContent=()=>{
     <FontAwesomeIcon icon={faBuildingColumns} />
     </div>
             </div>
-            <div className="grid lg:grid-cols-5 grid-rows-2 pb-6">
+
+            {
+              projects.map((project, index) => (
+
+
+            <div className="grid grid-cols-1 lg:grid-cols-5 grid-rows-2 pb-6" key={index}>
     <div className="title lg:col-span-2 lg:text-end">
-        <h2 className='text-[20px] block'> Shoes Ecommerce </h2>
+        <h2 className='text-[20px] block'> {project.title} </h2>
         
      
     </div>
-    <div className="dot lg:col-span-1 hidden lg:block text-center relative">
+    <div className="dot lg:col-span-1 left-0 lg:block text-center relative">
     <div className='big'>
         <div className=''></div>
     </div>
     </div>
     <div className="content lg:col-span-2 text-white font-serif text-[14px]">
         <p className='w-1/2'>
-       <a href="https://shoes-next-js.vercel.app/" target="_blank">https://shoes-next-js.vercel.app/</a>  <br />
-        NextJs 14,Next-Intl,NextAuth,TypeScript,Tailwindcss,MaterialU,Redux Toolkit
+        {project.link && (
+  <a href={project.link} target="_blank" rel="noopener noreferrer">
+    {project.link}
+  </a>
+)}<br/>
+        {project.description}
             </p> 
     </div>
     </div>
-    <div className="grid lg:grid-cols-5 grid-rows-2 pb-6">
-    <div className="title lg:col-span-2 lg:text-end">
-        <h2 className='text-[20px] block'> Shoes Ecommerce Api  </h2>
-        
-     
-    </div>
-    <div className="dot lg:col-span-1 hidden lg:block text-center relative">
-    <div className='big'>
-        <div className=''></div>
-    </div>
-    </div>
-    <div className="content lg:col-span-2 text-white font-serif text-[14px]">
-        <p className='w-1/2'>
-        API, N-Tier architecture, supported multilanguage validate error
-     messages with Fluent Validation , JWTToken, Authorize and Authenticate
-            </p> 
-    </div>
-    </div>
-    <div className="grid lg:grid-cols-5 grid-rows-2 pb-6">
-    <div className="title lg:col-span-2 lg:text-end">
-        <h2 className='text-[20px] block'>Karl Fashion</h2>
-     
-    </div>
-    <div className="dot lg:col-span-1 hidden lg:block text-center relative">
-    <div className='big'>
-        <div className=''></div>
-    </div>
-    </div>
-    <div className="content lg:col-span-2 text-white font-serif text-[14px]">
-        <p className='w-1/2'>
-          MVC, N-tier architecture,addtocart
-          , Orderpdf Generator
-           IdentityToken, Confirm Email,
-          Forgot Password,Multilanguage
-          ,Orderpdf Send Email
-            </p> 
-    </div>
-    </div>
-    <div className="grid lg:grid-cols-5 grid-rows-2 pb-6">
-    <div className="title lg:col-span-2 lg:text-end">
-        <h2 className='text-[20px] block'>Karl-Fashion Api</h2>
-    
-    </div>
-    <div className="dot lg:col-span-1 hidden lg:block text-center relative">
-    <div className='big'>
-        <div className=''></div>
-    </div>
-    </div>
-    <div className="content lg:col-span-2 text-white text-[14px]"> 
-      <p className='w-1/2'>
-    
-    AccessToken, RefreshToken,
-    Jwt token, Hashing,
-    FluentValidation,
-    Multilanguage
-      </p>
-    </div>
-    </div>
-    <div className="grid lg:grid-cols-5 grid-rows-2 pb-6">
-    <div className="title lg:col-span-2 lg:text-end">
-        <h2 className='text-[20px] block'>Aztu-Events</h2>
-        
-    </div>
-    <div className="dot lg:col-span-1 hidden lg:block text-center relative">
-    <div className='big'>
-        <div className=''></div>
-    </div>
-    </div>
-    <div className="content lg:col-span-2 text-white text-[14px]">
-    <p className='w-1/2'>
-          MVC, N-tier architecture,
-          IdentityToken,ConfirmEmail,
-          Forgot Password, Multilanguage
-            </p> 
-    </div>
-    </div>
-    <div className="grid lg:grid-cols-5 grid-rows-2  pb-6">
-    <div className="title lg:col-span-2 lg:text-end">
-        <h2 className='text-[20px] block'>ZMT zmt.az</h2>
-        
-    </div>
-    <div className="dot lg:col-span-1 hidden lg:block text-center relative">
-    <div className='big'>
-        <div className=''></div>
-    </div>
-    </div>
-    <div className="content lg:col-span-2 text-white text-[14px]">
-    <p className='w-1/2'>
-          MVC,N-tier architecture,
-          IdentityToken,Confirm Email,
-          Forgot Password
-            </p> 
-    </div>
-    </div>
+
+              ))
+            }
+ 
+  
         </div>
     </div>
     </div>

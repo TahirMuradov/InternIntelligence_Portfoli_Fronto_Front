@@ -31,12 +31,15 @@
         width: 50px;
         padding: 20px;    
     }
+  
+  
     .dot:after{
+       
     content: " ";
     position: absolute;
     top: -21%;
     left: 50%;
-    width: 1%;
+    width: 1px;
     height: 240%;
     background-color: #00d7bb;
     }
@@ -45,7 +48,7 @@
         position: absolute;
         bottom:0;
         left: 50%;
-        width: 1%;
+        width: 1px;
         background-color: #00d7bb;
         height: 44%;
     }
@@ -68,3 +71,37 @@
         background-color: #00d7bb;
         }
     }
+
+      
+      
+  
+      
+     
+        @media  (max-width: 1024px) {
+            .dot{
+                left: -7%;
+            }
+            .dot .big{
+               left: 0;
+            }
+            .dot:after{
+                content: " ";
+                position: absolute;
+                top: -21%;
+                left: 0%;
+                width: 1px;
+                height: 190px;
+                background-color: #00d7bb;
+                }
+                .dot:before{
+                    content: " ";
+                    position: absolute;
+                    bottom:0;
+                    left: 0%;
+                    width: 1px;
+                    background-color: #00d7bb;
+                    height: 44%;
+                }
+        }
+      
+      
