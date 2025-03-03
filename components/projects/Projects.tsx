@@ -63,7 +63,7 @@ const DefaultContent=()=>{
         
      
     </div>
-    <div className="dot lg:col-span-1 left-0 lg:block text-center relative">
+    <div className="dot hidden lg:col-span-1 left-0 lg:block text-center relative">
     <div className='big'>
         <div className=''></div>
     </div>
